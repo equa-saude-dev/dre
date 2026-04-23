@@ -1,8 +1,4 @@
-import fs from 'fs/promises';
-import path from 'path';
 import { DREState } from './calc';
-
-const DATA_FILE = path.join(process.cwd(), 'data.json');
 
 const DEFAULT_STATE: DREState = {
   captacao: 400000, equity: 7, jurPct: 8, caixaPct: 20,
@@ -42,14 +38,9 @@ const DEFAULT_STATE: DREState = {
 };
 
 export async function getState(): Promise<DREState> {
-  try {
-    const data = await fs.readFile(DATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
-    return DEFAULT_STATE;
-  }
+  return DEFAULT_STATE;
 }
 
 export async function saveState(state: DREState): Promise<void> {
-  await fs.writeFile(DATA_FILE, JSON.stringify(state, null, 2));
+  // No-op on Vercel/Production
 }
