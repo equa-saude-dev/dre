@@ -303,8 +303,17 @@ export default function DREDashboard() {
       {/* HEADER */}
       <div className="hero">
         <div className="hero-left">
-          <span className="app-title">Equa — DRE</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span className="app-title">Equa — DRE</span>
+            <span style={{ fontSize: '0.7rem', background: '#14a08c', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>V1.1 - Supabase</span>
+          </div>
           <span className="hero-desc">Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.</span>
+          
+          {(!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) && (
+            <div style={{ marginTop: '10px', padding: '10px', background: 'rgba(255,0,0,0.1)', border: '1px solid red', borderRadius: '5px', color: 'red', fontSize: '0.8rem' }}>
+              ⚠️ Erro de Configuração: Variáveis do Supabase não encontradas no ambiente.
+            </div>
+          )}
         </div>
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>
           {theme === 'light' ? 'Tema escuro' : 'Tema claro'}
