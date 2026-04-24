@@ -84,7 +84,7 @@ const uid = () => ++_uid;
 const BRL = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v || 0);
 
 function calcMeses(state: DREState) {
-  const fromPhases = state.phases.reduce((max, p) => Math.max(max, p.endM), 0);
+  const fromPhases = (state.phases || []).reduce((max, p) => Math.max(max, p.endM), 0);
   const planned = state.mesesPlan || 18;
   return Math.min(36, Math.max(fromPhases, planned));
 }
@@ -106,7 +106,13 @@ function calcDRE(state: DREState) {
     const rRevShare = m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0;
     const rec = rSub + rPerf + rEquaPay + rRevShare;
     let cost = 0;
-    Object.values(state.areaCosts).forEach(area => area.forEach(c => { if (m >= c.startM && m <= c.endM) cost += c.monthly; }));
+    if (state.areaCosts) {
+      Object.values(state.areaCosts).forEach(area => {
+        if (Array.isArray(area)) {
+          area.forEach(c => { if (m >= c.startM && m <= c.endM) cost += c.monthly; });
+        }
+      });
+    }
     const res = rec - cost; caixa += res;
     dreData.push({ m, h, rSub, rPerf, rEquaPay, rRevShare, rec, cost, res, caixa });
     totals.rec += rec; totals.rSub += rSub; totals.rPerf += rPerf;
@@ -119,7 +125,13 @@ function calcScenario(s: Scenario, state: DREState, meses: number) {
   let totalCost = 0;
   for (let m = 1; m <= meses; m++) {
     let mc = 0;
-    Object.values(state.areaCosts).forEach(area => area.forEach(c => { if (m >= c.startM && m <= c.endM) mc += c.monthly; }));
+    if (state.areaCosts) {
+      Object.values(state.areaCosts).forEach(area => {
+        if (Array.isArray(area)) {
+          area.forEach(c => { if (m >= c.startM && m <= c.endM) mc += c.monthly; });
+        }
+      });
+    }
     totalCost += mc;
   }
   const avgCost = meses > 0 ? totalCost / meses : 0;
@@ -135,7 +147,13 @@ function calcScenario(s: Scenario, state: DREState, meses: number) {
       + (m >= state.revShareIni ? h * state.equaPayVol * (state.equaPayTaxa / 100) : 0)
       + (m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0);
     let c = 0;
-    Object.values(state.areaCosts).forEach(area => area.forEach(ci => { if (m >= ci.startM && m <= ci.endM) c += ci.monthly; }));
+    if (state.areaCosts) {
+      Object.values(state.areaCosts).forEach(area => {
+        if (Array.isArray(area)) {
+          area.forEach(ci => { if (m >= ci.startM && m <= ci.endM) c += ci.monthly; });
+        }
+      });
+    }
     caixa += (rec - c); totRec += rec; totCost += c; cxSim -= c;
     if (cxSim > 0) runwayReal = m;
   }
@@ -182,10 +200,16 @@ export default function Dashboard() {
         }
 
         const serverState = data?.state;
-        if (serverState && Object.keys(serverState).length > 0) {
+        if (serverState && typeof serverState === 'object') {
           console.log('✅ Server state loaded');
-          if (!(serverState as any).mesesPlan) (serverState as any).mesesPlan = 18;
-          setState(serverState as any);
+          // Merge with DEFAULT_STATE to ensure all keys exist
+          const mergedState = { ...DEFAULT_STATE, ...serverState };
+          // Ensure nested objects/arrays are also merged or initialized if missing
+          if (!mergedState.areaCosts) mergedState.areaCosts = DEFAULT_STATE.areaCosts;
+          if (!mergedState.phases) mergedState.phases = DEFAULT_STATE.phases;
+          if (!mergedState.scenarios) mergedState.scenarios = DEFAULT_STATE.scenarios;
+          
+          setState(mergedState as DREState);
         } else {
           console.log('ℹ️ Server state empty, using default');
         }
@@ -296,9 +320,19 @@ export default function Dashboard() {
 
   const allocAreas: Record<string, number> = {}; let allocTotal = 0;
   for (let m = 1; m <= meses; m++) {
-    Object.keys(state.areaCosts).forEach(a => {
-      (state.areaCosts[a] || []).forEach(c => { if (m >= c.startM && m <= c.endM) { allocAreas[a] = (allocAreas[a] || 0) + c.monthly; allocTotal += c.monthly; } });
-    });
+    if (state.areaCosts) {
+      Object.keys(state.areaCosts).forEach(a => {
+        const areaItems = state.areaCosts[a];
+        if (Array.isArray(areaItems)) {
+          areaItems.forEach(c => { 
+            if (m >= c.startM && m <= c.endM) { 
+              allocAreas[a] = (allocAreas[a] || 0) + c.monthly; 
+              allocTotal += c.monthly; 
+            } 
+          });
+        }
+      });
+    }
   }
 
   const leituraText = lastD ? `Com captação de ${BRL(state.captacao)} (${state.equity}% equity) e ${meses} meses de horizonte, a empresa atinge ${lastD.h} hospitais e encerra o período com caixa ${lastD.caixa > 0 ? 'positivo' : 'negativo'} de ${BRL(lastD.caixa)}. Receita total: ${BRL(totals.rec)}${totals.rEquaPay > 0 ? ` (inclui ${BRL(totals.rEquaPay)} Equa Pay + ${BRL(totals.rRevShare)} Rev Share).` : '.'}` : '';
