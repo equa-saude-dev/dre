@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Plot from '@/components/DynamicPlot';
-import { fetchStateAction, saveStateAction } from '@/app/actions';
+import { saveStateAction } from '@/app/actions';
+import { supabase } from '@/lib/supabase';
 import { DREState, KPI, Initiative, Phase, Scenario, CostItem, MonthData } from '@/lib/calc';
 
 
@@ -170,26 +171,36 @@ export default function DREDashboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        const serverState = await fetchStateAction();
+        // Fetch directly from Supabase on client to avoid Server Action overhead/instability on load
+        const { data, error } = await supabase
+          .from('dre_data')
+          .select('state')
+          .eq('id', 1)
+          .single();
+
+        if (error) throw error;
+
+        const serverState = data?.state;
         if (serverState && Object.keys(serverState).length > 0) {
           if (!(serverState as any).mesesPlan) (serverState as any).mesesPlan = 18;
           setState(serverState as any);
-        } else {
-          throw new Error('No server state');
         }
       } catch (err) {
-        console.warn('Fallback to local storage:', err);
-        const saved = localStorage.getItem('dre_state_v18');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (!parsed.mesesPlan) parsed.mesesPlan = 18;
-          setState(parsed);
-        }
+        console.warn('Supabase load failed, trying local storage:', err);
+        try {
+          const saved = localStorage.getItem('dre_state_v18');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (!parsed.mesesPlan) parsed.mesesPlan = 18;
+            setState(parsed);
+          }
+        } catch {}
       } finally {
         setIsLoaded(true);
       }
     }
     loadData();
+    // ... rest of theme logic ...
 
     try {
       const savedTheme = localStorage.getItem('dre_theme') || 'dark';
@@ -228,13 +239,12 @@ export default function DREDashboard() {
       setIsSyncing(true);
       try {
         await saveStateAction(state);
-        console.log('✅ Supabase synced');
       } catch (err) {
         console.error('❌ Supabase sync failed:', err);
       } finally {
         setIsSyncing(false);
       }
-    }, 1500); // Debounce 1.5s to avoid hitting Supabase too hard
+    }, 3000); // Increased debounce to 3s for maximum stability
 
     return () => clearTimeout(timer);
   }, [state, isLoaded]);
