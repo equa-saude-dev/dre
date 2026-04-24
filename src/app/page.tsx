@@ -163,26 +163,33 @@ export default function DREDashboard() {
   const [prem, setPrem] = useState<Partial<DREState>>({});
   const [premDirty, setPremDirty] = useState(false);
   const [tooltip, setTooltip] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Load from Supabase and fallback to localStorage
   useEffect(() => {
-    fetchStateAction().then((serverState: any) => {
-      if (serverState && Object.keys(serverState).length > 0) {
-        if (!serverState.mesesPlan) serverState.mesesPlan = 18;
-        setState(serverState);
-      } else {
-        throw new Error('Empty state from server');
-      }
-    }).catch(() => {
+    async function loadData() {
       try {
+        const serverState = await fetchStateAction();
+        if (serverState && Object.keys(serverState).length > 0) {
+          if (!(serverState as any).mesesPlan) (serverState as any).mesesPlan = 18;
+          setState(serverState as any);
+        } else {
+          throw new Error('No server state');
+        }
+      } catch (err) {
+        console.warn('Fallback to local storage:', err);
         const saved = localStorage.getItem('dre_state_v18');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (!parsed.mesesPlan) parsed.mesesPlan = 18;
           setState(parsed);
         }
-      } catch {}
-    });
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    loadData();
 
     try {
       const savedTheme = localStorage.getItem('dre_theme') || 'dark';
@@ -201,22 +208,36 @@ export default function DREDashboard() {
   const handleUpdate = useCallback((updates: Partial<DREState>) => {
     setState(prev => {
       const next = { ...prev, ...updates };
-      try { localStorage.setItem('dre_state_v18', JSON.stringify(next)); } catch {}
       
-      // Call Supabase save in a microtask to avoid issues with concurrent state updates
-      Promise.resolve().then(async () => {
-        console.log('🔄 Sincronizando com Supabase...');
-        const res = await saveStateAction(next);
-        if (res.success) {
-          console.log('✅ Sincronizado com sucesso!');
-        } else {
-          console.error('❌ Erro na sincronização:', res.error);
-        }
-      });
-
+      // 1. Local Persistence (Sync)
+      try { 
+        localStorage.setItem('dre_state_v18', JSON.stringify(next)); 
+      } catch (e) {}
+      
+      // 2. Schedule Supabase Sync (Async/Outside updater)
+      // We don't call it here to keep the updater pure
       return next;
     });
   }, []);
+
+  // Effect to handle Supabase Sync after state updates
+  useEffect(() => {
+    if (!isLoaded) return; // Don't save before initial load is complete
+
+    const timer = setTimeout(async () => {
+      setIsSyncing(true);
+      try {
+        await saveStateAction(state);
+        console.log('✅ Supabase synced');
+      } catch (err) {
+        console.error('❌ Supabase sync failed:', err);
+      } finally {
+        setIsSyncing(false);
+      }
+    }, 1500); // Debounce 1.5s to avoid hitting Supabase too hard
+
+    return () => clearTimeout(timer);
+  }, [state, isLoaded]);
 
   const { dreData, totals, meses } = useMemo(() => calcDRE(state), [state]);
   const postMoney = state.equity > 0 ? state.captacao / (state.equity / 100) : 0;
@@ -306,6 +327,7 @@ export default function DREDashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span className="app-title">Equa — DRE</span>
             <span style={{ fontSize: '0.7rem', background: '#14a08c', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>V1.1 - Supabase</span>
+            {isSyncing && <span style={{ fontSize: '0.7rem', color: 'var(--txm)', fontStyle: 'italic' }}>🔄 Sincronizando...</span>}
           </div>
           <span className="hero-desc">Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.</span>
           
