@@ -41,13 +41,20 @@ const DEFAULT_STATE: DREState = {
       { id: 101, cat: 'folha', desc: 'CTO / Dev Fullstack', monthly: 12000, startM: 1, endM: 18 },
       { id: 102, cat: 'folha', desc: 'Dev Backend PJ', monthly: 8000, startM: 4, endM: 18 },
       { id: 103, cat: 'ferramentas', desc: 'Google Cloud / Vertex AI', monthly: 1500, startM: 1, endM: 18 },
+      { id: 104, cat: 'ferramentas', desc: 'Linkedin', monthly: 1000, startM: 1, endM: 9 },
+      { id: 105, cat: 'ferramentas', desc: 'You lead - 20 reuniões', monthly: 2500, startM: 1, endM: 9 },
     ],
     comercial: [
       { id: 201, cat: 'folha', desc: 'Head Comercial part-time', monthly: 6000, startM: 3, endM: 18 },
       { id: 202, cat: 'ferramentas', desc: 'CRM HubSpot', monthly: 400, startM: 2, endM: 18 },
     ],
     operacoes: [{ id: 301, cat: 'folha', desc: 'Customer Success', monthly: 4000, startM: 2, endM: 18 }],
-    juridico: [{ id: 401, cat: 'folha', desc: 'Advogado retainer', monthly: 3000, startM: 1, endM: 18 }],
+    juridico: [
+      { id: 401, cat: 'folha', desc: 'Advogado retainer', monthly: 2000, startM: 1, endM: 9 },
+      { id: 402, cat: 'ferramentas', desc: 'Clicksign', monthly: 200, startM: 1, endM: 9 },
+      { id: 403, cat: 'opex', desc: 'Contabilidade', monthly: 300, startM: 1, endM: 9 },
+      { id: 404, cat: 'opex', desc: 'Viagens coorporativas', monthly: 4000, startM: 1, endM: 9 },
+    ],
     outro: [],
   },
   scenarios: [
@@ -56,26 +63,27 @@ const DEFAULT_STATE: DREState = {
     { id: 3, name: 'Otimista', cap: 600000, eq: 8, hFim: 15, sub: 22000, perf: 12000, runwayTarget: null },
   ],
   phases: [
-    { id: 1, name: 'M1 · Validação', startM: 1, endM: 6, objective: 'Fechar 1 hospital e provar ROI', kr: '1 hospital ativo, ROI demonstrado',
+    { id: 1, name: 'M1 · Validação', startM: 1, endM: 9, objective: 'Primeira prova comercial e operacional completa da Equa', kr: '1 contrato assinado, 3 contas-alvo em pipeline qualificado avançado',
       initiatives: [
-        { id: 10, name: 'MVP Produto Core', area: 'produto', subarea: 'Plataforma', pct: 60, kpis: [{ id: 2001, metric: 'Funcionalidades entregues', target: '5 módulos' }] },
-        { id: 11, name: 'Setup Comercial', area: 'comercial', subarea: 'Vendas Diretas', pct: 20, kpis: [{ id: 2002, metric: 'Demos realizadas', target: '10' }] },
+        { id: 10, name: 'Validar MVP em produção', area: 'produto', subarea: 'Eng & IA', pct: 63, kpis: [
+          { id: 2001, metric: 'Evoluir intel de contrato', target: 'Recall > 80% - Precisão > 90% - R1' },
+          { id: 2002, metric: 'Evoluir a estrutura do pipeline do Equa core', target: 'Recall e acurácia dos dados processados' },
+          { id: 2003, metric: 'Integrar com ERP (Tasy, MV, Wareline, SPData)', target: 'Executar 1 integração e2e' }
+        ] },
+        { id: 11, name: 'Captação de leads', area: 'comercial', subarea: 'Eventos', pct: 33, kpis: [
+          { id: 2004, metric: 'Participar ativamente de eventos de saúde', target: '10 leads qualificados' },
+          { id: 2005, metric: 'Campanhas de awareness em diferentes veículos', target: '50 leads' },
+          { id: 2006, metric: 'Criar agente de prospecção com IA', target: '15 leads qualificados' },
+          { id: 2007, metric: 'Criar playbook de vendas', target: '4 demos apresentadas' },
+          { id: 2008, metric: 'Aumentar reuniões presenciais', target: '15 reuniões' },
+          { id: 2009, metric: 'Aumentar reuniões iniciais - You lead', target: '100' }
+        ] },
+        { id: 12, name: 'Jurídico e LGPD', area: 'juridico', subarea: 'Contratos', pct: 11, kpis: [
+          { id: 2010, metric: 'Estarmos contratualmente dentro dos conformes de segurança e LGPD', target: '1 contrato conforme' }
+        ] },
       ]
     },
-    { id: 2, name: 'M2 · Piloto', startM: 7, endM: 12, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0',
-      initiatives: [
-        { id: 12, name: 'Expansão Comercial', area: 'comercial', subarea: 'Vendas Diretas', pct: 40, kpis: [{ id: 2003, metric: 'Contratos fechados', target: '3' }] },
-        { id: 13, name: 'CS & Onboarding', area: 'operacoes', subarea: 'Customer Success', pct: 30, kpis: [{ id: 2004, metric: 'Tempo onboarding', target: '< 30 dias' }] },
-        { id: 14, name: 'Equa Pay MVP', area: 'produto', subarea: 'Fintech / Pay', pct: 30, kpis: [{ id: 2005, metric: 'Volume antecipado', target: 'R$ 500k' }] },
-      ]
-    },
-    { id: 3, name: 'M3 · Escala', startM: 13, endM: 18, objective: '10 hospitais, Equa Pay operacional', kr: 'MRR ≥ R$ 200k',
-      initiatives: [
-        { id: 15, name: 'Growth & Marketing', area: 'comercial', subarea: 'Marketing', pct: 35, kpis: [{ id: 2006, metric: 'Hospitais ativos', target: '10' }] },
-        { id: 16, name: 'Produto Avançado', area: 'produto', subarea: 'Plataforma', pct: 40, kpis: [{ id: 2007, metric: 'Integrações TISS', target: '3' }] },
-        { id: 17, name: 'Rev Share Launch', area: 'comercial', subarea: 'Parcerias', pct: 25, kpis: [{ id: 2008, metric: 'Contratos Rev Share', target: '5' }] },
-      ]
-    },
+    { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
 };
 
@@ -420,31 +428,79 @@ export default function Dashboard() {
               <PHintField label="Prazo total (meses)" field="mesesPlan" min={6} max={36} value={getPrem('mesesPlan') as number} onChange={(v: string) => setPremField('mesesPlan', Math.min(36, Math.max(6, Number(v))))} hint={FIELD_HINTS.mesesPlan} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
             </div>
             <div className="fields sub2" style={{ marginTop: '.875rem' }}><PHintField label="Início 1ª receita (mês)" field="inicioRec" value={getPrem('inicioRec') as number} onChange={(v: string) => setPremField('inicioRec', Number(v))} hint={FIELD_HINTS.inicioRec} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} /></div>
-            <span className="lbl" style={{ marginTop: '1.25rem' }}>🏥 Receita Core — Glosas</span>
+            
+            <div className="section-divider" />
+            <span className="lbl">🏥 Receita Core — Glosas</span>
             <div className="fields sub3">
               <PHintField label="Subscription / contrato (R$)" field="sub" value={getPrem('sub') as number} onChange={(v: string) => setPremField('sub', Number(v))} hint={FIELD_HINTS.sub} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <PHintField label="Performance Fee / contrato (R$)" field="perf" value={getPrem('perf') as number} onChange={(v: string) => setPremField('perf', Number(v))} hint={FIELD_HINTS.perf} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <div className="field"><label>Receita piloto / mês (R$) <InfoBtn field="piloto" /></label><input type="number" value={getPrem('piloto') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('piloto', Number(e.target.value))} /><small>0 = piloto gratuito</small><TooltipBox field="piloto" /></div>
             </div>
-            <span className="lbl" style={{ marginTop: '1.25rem' }}>⚡ Equa Pay — Antecipação</span>
+            
+            <div className="section-divider" />
+            <span className="lbl">⚡ Equa Pay — Antecipação</span>
             <div className="fields sub2">
               <PHintField label="Faturamento do hospital / mês (R$)" field="equaPayVol" value={getPrem('equaPayVol') as number} onChange={(v: string) => setPremField('equaPayVol', Number(v))} hint={FIELD_HINTS.equaPayVol} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <div className="field"><label>Taxa de antecipação (%) <InfoBtn field="equaPayTaxa" /></label><input type="number" step={0.1} value={getPrem('equaPayTaxa') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('equaPayTaxa', Number(e.target.value))} /><small>Cobrada sobre o faturamento</small><TooltipBox field="equaPayTaxa" /></div>
             </div>
-            <span className="lbl" style={{ marginTop: '1.25rem' }}>📊 Revenue Share</span>
+            
+            <div className="section-divider" />
+            <span className="lbl">📊 Revenue Share</span>
             <div className="fields sub3">
               <div className="field"><label>Revenue Share (%) <InfoBtn field="revSharePct" /></label><input type="number" step={0.5} value={getPrem('revSharePct') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('revSharePct', Number(e.target.value))} /><small>% sobre o faturamento antecipado</small><TooltipBox field="revSharePct" /></div>
               <PHintField label="Faturamento do hospital / hosp / mês (R$)" field="revShareBase" value={getPrem('revShareBase') as number} onChange={(v: string) => setPremField('revShareBase', Number(v))} hint={FIELD_HINTS.revShareBase} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <PHintField label="Mês de início (Equa Pay + Rev. Share)" field="revShareIni" value={getPrem('revShareIni') as number} onChange={(v: string) => setPremField('revShareIni', Number(v))} hint={FIELD_HINTS.revShareIni} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
             </div>
-            <div className="actions" style={{ marginTop: '1.25rem' }}><button className="btn pri" onClick={applyPremissas} style={{ opacity: premDirty ? 1 : 0.55 }}>✓ Aplicar premissas</button></div>
+            <div className="actions" style={{ marginTop: '1.5rem' }}><button className="btn pri" onClick={applyPremissas} style={{ opacity: premDirty ? 1 : 0.55 }}>✓ Aplicar premissas</button></div>
           </div></div>
+          
           <div className="panel"><div className="ph"><h2>Estrutura de Custos</h2></div><div className="pb">
             {AREA_LIST.map(area => {
               const items = state.areaCosts[area] || []; const total = items.reduce((a, c) => a + c.monthly, 0);
-              return (<div key={area} className="custo-panel"><div className="custo-header"><div><span className="custo-area-name">{AREA_LABELS[area]}</span><div className="custo-summary"><span className="pill">{BRL(total)}/mês</span></div></div><button className="btn-sm" onClick={() => addCost(area)}>+ Item</button></div><div className="custo-body"><table className="cost-table"><thead><tr><th>Categoria</th><th>Descrição</th><th>R$/mês</th><th>Mês ini.</th><th>Mês fim</th><th></th></tr></thead><tbody>
-                {items.map(c => (<tr key={c.id}><td><select value={c.cat} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updCost(area, c.id, { cat: e.target.value as any })}>{Object.keys(CAT_LABELS).map(cat => <option key={cat} value={cat}>{CAT_LABELS[cat]}</option>)}</select></td><td><input value={c.desc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updCost(area, c.id, { desc: e.target.value })} /></td><td><input type="number" value={c.monthly} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updCost(area, c.id, { monthly: Number(e.target.value) })} /></td><td><input type="number" value={c.startM} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updCost(area, c.id, { startM: Number(e.target.value) })} /></td><td><input type="number" value={c.endM} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updCost(area, c.id, { endM: Number(e.target.value) })} /></td><td><button className="btn-sm btn-danger" onClick={() => delCost(area, c.id)}>✕</button></td></tr>))}
-              </tbody></table></div></div>);
+              return (
+                <div key={area} className="custo-panel">
+                  <div className="custo-header">
+                    <div>
+                      <span className="custo-area-name">{AREA_LABELS[area]}</span>
+                      <div className="custo-summary">
+                        <span className="pill pri">{BRL(total)}/mês médio</span>
+                        <span className="pill">{items.length} itens</span>
+                      </div>
+                    </div>
+                    <button className="btn-sm pri" onClick={() => addCost(area)}>+ Item</button>
+                  </div>
+                  <div className="custo-body">
+                    <table className="cost-table">
+                      <thead>
+                        <tr>
+                          <th>CATEGORIA</th>
+                          <th>DESCRIÇÃO</th>
+                          <th>R$/MÊS</th>
+                          <th>MÊS INI.</th>
+                          <th>MÊS FIM</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map(c => (
+                          <tr key={c.id}>
+                            <td>
+                              <select value={c.cat} onChange={(e) => updCost(area, c.id, { cat: e.target.value as any })}>
+                                {Object.keys(CAT_LABELS).map(cat => <option key={cat} value={cat}>{CAT_LABELS[cat]}</option>)}
+                              </select>
+                            </td>
+                            <td><input value={c.desc} onChange={(e) => updCost(area, c.id, { desc: e.target.value })} /></td>
+                            <td><input type="number" value={c.monthly} onChange={(e) => updCost(area, c.id, { monthly: Number(e.target.value) })} /></td>
+                            <td><input type="number" value={c.startM} style={{ width: '60px' }} onChange={(e) => updCost(area, c.id, { startM: Number(e.target.value) })} /></td>
+                            <td><input type="number" value={c.endM} style={{ width: '60px' }} onChange={(e) => updCost(area, c.id, { endM: Number(e.target.value) })} /></td>
+                            <td><button className="btn-icon danger" onClick={() => delCost(area, c.id)}>✕</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
             })}
           </div></div>
         </section>
@@ -452,18 +508,87 @@ export default function Dashboard() {
       {activeTab === 'roadmap' && (
         <section className="tab-panel g1 active">
           <div className="panel"><div className="ph"><h2>GTM / OKRs</h2></div><div className="pb">
-            {state.phases.map(ph => (
-              <div key={ph.id} className="okr-card">
-                <div style={{ display: 'flex', gap: '.75rem', marginBottom: '.875rem' }}><span className="milestone-badge">{ph.name}</span><span className="pill">M{ph.startM}–M{ph.endM}</span></div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto', gap: '.75rem', marginBottom: '.75rem' }}>
-                  <input value={ph.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updPhase(ph.id, { name: e.target.value })} /><input value={ph.objective} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updPhase(ph.id, { objective: e.target.value })} /><input type="number" value={ph.startM} style={{ width: '60px' }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updPhase(ph.id, { startM: Number(e.target.value) })} /><input type="number" value={ph.endM} style={{ width: '60px' }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updPhase(ph.id, { endM: Number(e.target.value) })} />
+            {(state.phases || []).map(ph => (
+              <div key={ph.id} className="okr-card-v2">
+                <div className="okr-header">
+                  <div className="milestone-badge-v2">{ph.name}</div>
+                  <div className="pill-v2">M{ph.startM}–M{ph.endM}</div>
+                  <button className="btn-icon danger" onClick={() => delMilestone(ph.id)}>✕</button>
                 </div>
-                <input value={ph.kr} style={{ marginBottom: '.75rem' }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updPhase(ph.id, { kr: e.target.value })} placeholder="Key Result" />
-                <table className="init-table"><tbody>{ph.initiatives.map(ini => (<tr key={ini.id}><td><input value={ini.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updInitiative(ph.id, ini.id, { name: e.target.value })} /></td><td><select value={ini.area} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updInitiative(ph.id, ini.id, { area: e.target.value })}>{Object.keys(AREA_LABELS).map(a => <option key={a} value={a}>{AREA_LABELS[a]}</option>)}</select></td><td><input type="number" value={ini.pct} style={{ width: '50px' }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updInitiative(ph.id, ini.id, { pct: Number(e.target.value) })} /></td><td><button className="btn-sm btn-danger" onClick={() => delInitiative(ph.id, ini.id)}>✕</button></td></tr>))}</tbody></table>
-                <button className="btn-sm" onClick={() => addInitiative(ph.id)}>+ Iniciativa</button>
+                
+                <div className="okr-main-fields">
+                  <div className="field-v2">
+                    <label>NOME DO MILESTONE</label>
+                    <input value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
+                  </div>
+                  <div className="field-v2">
+                    <label>OBJETIVO</label>
+                    <input value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
+                  </div>
+                  <div className="field-v2-sm">
+                    <label>MÊS INÍCIO</label>
+                    <input type="number" value={ph.startM} onChange={(e) => updPhase(ph.id, { startM: Number(e.target.value) })} />
+                  </div>
+                  <div className="field-v2-sm">
+                    <label>MÊS FIM</label>
+                    <input type="number" value={ph.endM} onChange={(e) => updPhase(ph.id, { endM: Number(e.target.value) })} />
+                  </div>
+                </div>
+
+                <div className="field-v2" style={{ marginTop: '1rem' }}>
+                  <label>KEY RESULT</label>
+                  <textarea value={ph.kr} onChange={(e) => updPhase(ph.id, { kr: e.target.value })} placeholder="Ex: MRR ≥ R$ 200k, Churn < 5%" />
+                </div>
+
+                <div className="initiatives-list">
+                  {(ph.initiatives || []).map(ini => (
+                    <div key={ini.id} className="initiative-box">
+                      <div className="init-header">
+                        <div className="field-v2">
+                          <label>INICIATIVA</label>
+                          <input value={ini.name} onChange={(e) => updInitiative(ph.id, ini.id, { name: e.target.value })} />
+                        </div>
+                        <div className="field-v2">
+                          <label>ÁREA</label>
+                          <select value={ini.area} onChange={(e) => updInitiative(ph.id, ini.id, { area: e.target.value })}>
+                            {Object.keys(AREA_LABELS).map(a => <option key={a} value={a}>{AREA_LABELS[a]}</option>)}
+                          </select>
+                        </div>
+                        <div className="field-v2">
+                          <label>SUBÁREA</label>
+                          <input value={ini.subarea} onChange={(e) => updInitiative(ph.id, ini.id, { subarea: e.target.value })} />
+                        </div>
+                        <div className="field-v2-sm">
+                          <label>% ALOC.</label>
+                          <input type="number" value={ini.pct} onChange={(e) => updInitiative(ph.id, ini.id, { pct: Number(e.target.value) })} />
+                        </div>
+                        <div className="init-actions">
+                          <button className="btn-sm pri" onClick={() => addKPI(ph.id, ini.id)}>+ KPI</button>
+                          <button className="btn-icon danger" onClick={() => delInitiative(ph.id, ini.id)}>✕</button>
+                        </div>
+                      </div>
+
+                      <div className="kpi-nested-list">
+                        <div className="kpi-grid-header">
+                          <span>MÉTRICA</span>
+                          <span>META</span>
+                          <span></span>
+                        </div>
+                        {(ini.kpis || []).map(k => (
+                          <div key={k.id} className="kpi-row-v2">
+                            <input value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} />
+                            <input value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} />
+                            <button className="btn-icon danger" onClick={() => delKPI(ph.id, ini.id, k.id)}>✕</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <button className="btn outline" onClick={() => addInitiative(ph.id)} style={{ marginTop: '1rem' }}>+ Adicionar Iniciativa</button>
+                </div>
               </div>
             ))}
-            <button className="btn" onClick={addMilestone}>+ Milestone</button>
+            <button className="btn pri" onClick={addMilestone}>+ Adicionar Milestone</button>
           </div></div>
         </section>
       )}
@@ -483,13 +608,38 @@ export default function Dashboard() {
       {activeTab === 'cenarios' && (
         <section className="tab-panel g1 active">
           <div className="panel"><div className="ph"><h2>Cenários</h2></div><div className="pb">
-            <div className="tw"><table><thead><tr><th>Cenário</th><th>Captação</th><th>Equity</th><th>Hosp.</th><th className="r">Caixa final</th><th className="r">Resultado</th><th></th></tr></thead><tbody>
-              {state.scenarios.map(s => {
-                const r = calcScenario(s, state, meses);
-                return (<tr key={s.id}><td><input value={s.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updScenario(s.id, { name: e.target.value })} /></td><td><input type="number" value={s.cap} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updScenario(s.id, { cap: Number(e.target.value) })} /></td><td><input type="number" value={s.eq} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updScenario(s.id, { eq: Number(e.target.value) })} /></td><td><input type="number" value={s.hFim} onChange={(e: React.ChangeEvent<HTMLInputElement>) => updScenario(s.id, { hFim: Number(e.target.value) })} /></td><td className="r">{BRL(r.caixaFinal)}</td><td className="r">{BRL(r.resultado)}</td><td><button className="btn-sm btn-danger" onClick={() => delScenario(s.id)}>✕</button></td></tr>);
-              })}
-            </tbody></table></div>
-            <button className="btn pri" onClick={addScenario}>+ Cenário</button>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>CENÁRIO</th>
+                    <th className="r">CAPTAÇÃO</th>
+                    <th className="r">EQUITY</th>
+                    <th className="r">HOSP.</th>
+                    <th className="r">CAIXA FINAL</th>
+                    <th className="r">RESULTADO</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(state.scenarios || []).map(s => {
+                    const r = calcScenario(s, state, meses);
+                    return (
+                      <tr key={s.id}>
+                        <td><input value={s.name} onChange={(e) => updScenario(s.id, { name: e.target.value })} /></td>
+                        <td className="r"><input type="number" className="scen-input" value={s.cap} onChange={(e) => updScenario(s.id, { cap: Number(e.target.value) })} /></td>
+                        <td className="r"><input type="number" className="scen-input" value={s.eq} onChange={(e) => updScenario(s.id, { eq: Number(e.target.value) })} /></td>
+                        <td className="r"><input type="number" className="scen-input" value={s.hFim} onChange={(e) => updScenario(s.id, { hFim: Number(e.target.value) })} /></td>
+                        <td className="r bold">{BRL(r.caixaFinal)}</td>
+                        <td className="r bold">{BRL(r.resultado)}</td>
+                        <td><button className="btn-icon danger" onClick={() => delScenario(s.id)}>✕</button></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <button className="btn pri" onClick={addScenario} style={{ marginTop: '1.5rem' }}>+ Novo Cenário</button>
           </div></div>
         </section>
       )}
