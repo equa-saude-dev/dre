@@ -154,28 +154,63 @@ export default function Dashboard() {
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
+      console.log('--- Initializing Data Load ---');
+      console.log('Supabase URL present:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+      console.log('Supabase Key present:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
       try {
-        const { data, error } = await supabase.from('dre_data').select('state').eq('id', 1).single();
-        if (error) throw error;
+        const { data, error } = await supabase
+          .from('dre_data')
+          .select('state')
+          .eq('id', 1)
+          .single();
+        
+        clearTimeout(timeoutId);
+
+        if (error) {
+          console.error('Supabase fetch error:', error);
+          if (error.code === 'PGRST301' || error.message.includes('Unauthorized')) {
+            setLoadError('Erro de Autenticação: Verifique as chaves do Supabase no Vercel.');
+          }
+          throw error;
+        }
+
         const serverState = data?.state;
         if (serverState && Object.keys(serverState).length > 0) {
+          console.log('✅ Server state loaded');
           if (!(serverState as any).mesesPlan) (serverState as any).mesesPlan = 18;
           setState(serverState as any);
+        } else {
+          console.log('ℹ️ Server state empty, using default');
         }
-      } catch (err) {
-        console.warn('Supabase load failed, trying local storage:', err);
+      } catch (err: any) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          console.warn('⚠️ Supabase fetch timed out');
+        } else {
+          console.warn('⚠️ Supabase load failed:', err.message || err);
+        }
+        
         try {
           const saved = localStorage.getItem('dre_state_v18');
           if (saved) {
+            console.log('✅ Local storage state recovered');
             const parsed = JSON.parse(saved);
             if (!parsed.mesesPlan) parsed.mesesPlan = 18;
             setState(parsed);
           }
-        } catch {}
+        } catch (localErr) {
+          console.error('Local storage recovery failed:', localErr);
+        }
       } finally {
+        console.log('--- Data Load Finished ---');
         setIsLoaded(true);
       }
     }
@@ -269,6 +304,13 @@ export default function Dashboard() {
             {isSyncing && <span style={{ fontSize: '0.7rem', color: 'var(--txm)', fontStyle: 'italic' }}>🔄 Sincronizando...</span>}
           </div>
           <span className="hero-desc">Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.</span>
+          
+          {loadError && (
+            <div style={{ marginTop: '10px', padding: '10px', background: 'rgba(255,165,0,0.1)', border: '1px solid orange', borderRadius: '5px', color: 'orange', fontSize: '0.8rem' }}>
+              ⚠️ {loadError}
+            </div>
+          )}
+
           {(!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) && (
             <div style={{ marginTop: '10px', padding: '10px', background: 'rgba(255,0,0,0.1)', border: '1px solid red', borderRadius: '5px', color: 'red', fontSize: '0.8rem' }}>⚠️ Erro de Configuração: Variáveis do Supabase não encontradas.</div>
           )}
