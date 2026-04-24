@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Plot from '@/components/DynamicPlot';
-import { saveStateAction } from '@/app/actions';
 import { supabase } from '@/lib/supabase';
 import { DREState, KPI, Initiative, Phase, Scenario, CostItem, MonthData } from '@/lib/calc';
 
@@ -239,7 +238,19 @@ export default function Dashboard() {
     if (!isLoaded) return;
     const timer = setTimeout(async () => {
       setIsSyncing(true);
-      try { await saveStateAction(state); } catch (err) {} finally { setIsSyncing(false); }
+      try { 
+        console.log('--- Syncing to Supabase ---');
+        const { error } = await supabase
+          .from('dre_data')
+          .upsert({ id: 1, state: state });
+        
+        if (error) throw error;
+        console.log('✅ Sync success');
+      } catch (err: any) {
+        console.error('❌ Sync failed:', err.message || err);
+      } finally { 
+        setIsSyncing(false); 
+      }
     }, 3000);
     return () => clearTimeout(timer);
   }, [state, isLoaded]);
