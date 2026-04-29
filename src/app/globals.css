@@ -49,9 +49,9 @@
   --suc:#7dcc52;
   --war:#e07a42;
   --err:#e06ab0;
-  --input-bg:#2a2838;
-  --input-text:#f0eeff;
-  --input-border:#524f6a;
+  --input-bg:#2a283e;
+  --input-text:#ffffff;
+  --input-border:#4a485e;
   --label-color:#b0accc;
 }
 
@@ -67,6 +67,8 @@ body{
   transition:background .2s,color .2s;
 }
 input,button,select,textarea{font:inherit}
+::placeholder{color:var(--txf);opacity:0.6}
+[data-theme=dark] ::placeholder{color:var(--txf);opacity:0.5}
 
 /* ─── LAYOUT ────────────────────────────────────────────────── */
 .app{max-width:1440px;margin:0 auto;padding:1.5rem}
@@ -316,11 +318,11 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
   letter-spacing: 0.08em;
 }
 .field-v2 input, .field-v2 select, .field-v2 textarea {
-  background: var(--sur2);
-  border: 1px solid var(--bor);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 0.5rem;
   padding: 0.7rem 0.9rem;
-  color: var(--tx);
+  color: var(--input-text);
   font-size: 0.9rem;
   transition: all 0.2s;
 }
@@ -393,11 +395,18 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
   margin-bottom: 0.5rem;
 }
 .kpi-row-v2 input {
-  background: var(--bg);
-  border: 1px solid var(--bor);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 0.4rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
+  color: var(--input-text);
+  transition: all 0.2s;
+}
+.kpi-row-v2 input:focus {
+  border-color: var(--pri);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
 }
 .btn-icon {
   background: none;
@@ -439,4 +448,23 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
   .app{padding:.75rem}
   .okr-main-fields { grid-template-columns: 1fr; }
   .init-header { grid-template-columns: 1fr; }
+}
+
+/* ─── READONLY MODE ─────────────────────────────────────────── */
+.readonly-mode input, .readonly-mode select, .readonly-mode textarea {
+  pointer-events: none;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+.readonly-mode button {
+  display: none !important;
+}
+.readonly-mode .tab-btn {
+  display: block !important;
+}
+.readonly-mode .btn-theme {
+  display: block !important;
+}
+.readonly-mode .info-btn {
+  display: inline-flex !important;
 }

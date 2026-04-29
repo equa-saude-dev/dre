@@ -39,6 +39,18 @@ export interface Phase {
   initiatives: Initiative[];
 }
 
+export interface ProjecaoTermo {
+  hospitais: number;
+  ticket: number;
+  custo: number;
+}
+
+export interface Projecao {
+  curto: ProjecaoTermo;
+  medio: ProjecaoTermo;
+  longo: ProjecaoTermo;
+}
+
 export interface Scenario {
   id: number;
   name: string;
@@ -71,6 +83,7 @@ export interface DREState {
   areaCosts: Record<string, CostItem[]>;
   phases: Phase[];
   scenarios: Scenario[];
+  projecao?: Projecao;
 }
 
 export interface MonthData {

@@ -85,6 +85,11 @@ const DEFAULT_STATE: DREState = {
     },
     { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
+  projecao: {
+    curto: { hospitais: 5, ticket: 30000, custo: 10000 },
+    medio: { hospitais: 20, ticket: 35000, custo: 9000 },
+    longo: { hospitais: 100, ticket: 40000, custo: 8000 }
+  }
 };
 
 let _uid = 3000;
@@ -182,6 +187,13 @@ export default function Dashboard() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsReadOnly(new URLSearchParams(window.location.search).get('readonly') === 'true');
+    }
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -261,15 +273,16 @@ export default function Dashboard() {
   }, [theme]);
 
   const handleUpdate = useCallback((updates: Partial<DREState>) => {
+    if (isReadOnly) return;
     setState(prev => {
       const next = { ...prev, ...updates };
       try { localStorage.setItem('dre_state_v18', JSON.stringify(next)); } catch (e) {}
       return next;
     });
-  }, []);
+  }, [isReadOnly]);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || isReadOnly) return;
     const timer = setTimeout(async () => {
       setIsSyncing(true);
       try { 
@@ -353,7 +366,12 @@ export default function Dashboard() {
   if (!isLoaded) return <div className="app-loading">Carregando dados...</div>;
 
   return (
-    <div className="app">
+    <div className={`app ${isReadOnly ? 'readonly-mode' : ''}`}>
+      {isReadOnly && (
+        <div style={{ background: 'var(--war)', color: '#000', padding: '0.5rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.85rem' }}>
+          Modo de Visualização - Edições desativadas
+        </div>
+      )}
       <div className="hero">
         <div className="hero-left">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -615,15 +633,73 @@ export default function Dashboard() {
       )}
       {activeTab === 'receita' && (
         <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>Projeção de Receita</h2></div><div className="pb">
-            <div className="tw"><table><thead><tr><th>Item</th>{dreData.map(d => <th key={d.m} className="r">M{d.m}</th>)}<th className="r">Total</th></tr></thead><tbody>
-              <DRERow label="Hospitais ativos" data={dreData} k="h" />
-              <DRERow label="Subscription (Core)" data={dreData} k="rSub" brl />
-              <DRERow label="Performance Fee (Core)" data={dreData} k="rPerf" brl />
-              <DRERow label="Equa Pay (Antecipação)" data={dreData} k="rEquaPay" brl />
-              <DRERow label="Revenue Share" data={dreData} k="rRevShare" brl />
-              <DRERow label="Receita Total" data={dreData} k="rec" brl bold dtotal color="var(--pri)" />
-            </tbody></table></div>
+          <div className="panel"><div className="ph"><h2>Projeção de Receita (Macro)</h2></div><div className="pb">
+            <p className="note" style={{ marginBottom: '1.5rem' }}>Esta projeção possui lógica própria para estimar cenários de curto, médio e longo prazo, independente das premissas mensais do DRE.</p>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>PREMISSA / MÉTRICA</th>
+                    <th className="r">CURTO PRAZO (Ano 1)</th>
+                    <th className="r">MÉDIO PRAZO (Ano 3)</th>
+                    <th className="r">LONGO PRAZO (Ano 5)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Hospitais Ativos</strong></td>
+                    {['curto', 'medio', 'longo'].map(p => {
+                      const keyP = p as 'curto' | 'medio' | 'longo';
+                      const proj = state.projecao || DEFAULT_STATE.projecao!;
+                      const term = proj[keyP];
+                      return <td key={p} className="r"><input type="number" className="scen-input" value={term.hospitais} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, hospitais: Number(e.target.value) } } })} /></td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td><strong>Ticket Médio Mensal (R$)</strong></td>
+                    {['curto', 'medio', 'longo'].map(p => {
+                      const keyP = p as 'curto' | 'medio' | 'longo';
+                      const proj = state.projecao || DEFAULT_STATE.projecao!;
+                      const term = proj[keyP];
+                      return <td key={p} className="r"><input type="number" className="scen-input" value={term.ticket} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, ticket: Number(e.target.value) } } })} /></td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td><strong>Custo Operacional Mensal / Hosp (R$)</strong></td>
+                    {['curto', 'medio', 'longo'].map(p => {
+                      const keyP = p as 'curto' | 'medio' | 'longo';
+                      const proj = state.projecao || DEFAULT_STATE.projecao!;
+                      const term = proj[keyP];
+                      return <td key={p} className="r"><input type="number" className="scen-input" value={term.custo} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, custo: Number(e.target.value) } } })} /></td>;
+                    })}
+                  </tr>
+                  <tr style={{ height: '1rem' }}><td colSpan={4}></td></tr>
+                  <tr className="subtotal">
+                    <td>Receita Anual Estimada</td>
+                    {['curto', 'medio', 'longo'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      return <td key={p} className="r bold">{BRL(proj.hospitais * proj.ticket * 12)}</td>
+                    })}
+                  </tr>
+                  <tr className="subtotal" style={{ color: 'var(--war)' }}>
+                    <td>Custo Operacional Anual Estimado</td>
+                    {['curto', 'medio', 'longo'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      return <td key={p} className="r bold">-{BRL(proj.hospitais * proj.custo * 12)}</td>
+                    })}
+                  </tr>
+                  <tr className="total">
+                    <td style={{ color: 'var(--pri)' }}>Margem Bruta Operacional Anual</td>
+                    {['curto', 'medio', 'longo'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const rec = proj.hospitais * proj.ticket * 12;
+                      const cst = proj.hospitais * proj.custo * 12;
+                      return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{BRL(rec - cst)}</td>
+                    })}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div></div>
         </section>
       )}
