@@ -159,8 +159,8 @@ export function calcScenarioResults(s: Scenario, state: DREState, meses: number)
       const rl = meses - state.inicioRec + 1;
       h = rl > 0 ? Math.min(s.hFim, Math.ceil((m - state.inicioRec + 1) * s.hFim / rl)) : s.hFim;
     }
-    const rSub = m >= state.inicioRec ? h * (state.piloto > 0 ? state.piloto : state.sub) : 0;
-    const rPerf = (m >= state.inicioRec && state.piloto === 0) ? h * state.perf : 0;
+    const rSub = m >= state.inicioRec ? h * (state.piloto > 0 ? state.piloto : s.sub) : 0;
+    const rPerf = (m >= state.inicioRec && state.piloto === 0) ? h * s.perf : 0;
     const rEquaPay = m >= state.revShareIni ? h * state.equaPayVol * (state.equaPayTaxa / 100) : 0;
     const rRevShare = m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0;
     const rec = rSub + rPerf + rEquaPay + rRevShare;
