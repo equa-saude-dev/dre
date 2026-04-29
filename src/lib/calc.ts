@@ -1,6 +1,6 @@
 export interface CostItem {
   id: number;
-  cat: 'folha' | 'ferramentas' | 'opex';
+  cat: 'folha' | 'ferramentas' | 'opex' | 'consultor';
   desc: string;
   monthly: number;
   startM: number;

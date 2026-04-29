@@ -9,7 +9,7 @@ import { DREState, KPI, Initiative, Phase, Scenario, CostItem, MonthData } from 
 const AREA_LIST = ['produto', 'comercial', 'operacoes', 'juridico'];
 const AREA_LABELS: Record<string, string> = { produto: 'Produto & Tech', comercial: 'Comercial & Marketing', operacoes: 'Operações / CS', juridico: 'Jurídico / Adm', outro: 'Outro' };
 const AREA_COLORS: Record<string, string> = { produto: '#7C5CFC', comercial: '#A78BFA', operacoes: '#437a22', juridico: '#964219', outro: '#9896a0' };
-const CAT_LABELS: Record<string, string> = { folha: 'Folha / RH', ferramentas: 'Ferramentas & SaaS', opex: 'Despesas operacionais' };
+const CAT_LABELS: Record<string, string> = { folha: 'Folha / RH', ferramentas: 'Ferramentas & SaaS', opex: 'Despesas operacionais', consultor: 'Consultor / Assessoria' };
 
 const FIELD_HINTS: Record<string, string> = {
   captacao:     'Valor total captado na rodada. Entra como caixa inicial na DRE: Caixa M0 = Captação.',
@@ -665,7 +665,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr>
-                    <td><strong>Custo Operacional Mensal / Hosp (R$)</strong></td>
+                    <td><strong>Custo Operacional Mensal Fixo (R$)</strong></td>
                     {['curto', 'medio', 'longo'].map(p => {
                       const keyP = p as 'curto' | 'medio' | 'longo';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
@@ -685,7 +685,7 @@ export default function Dashboard() {
                     <td>Custo Operacional Anual Estimado</td>
                     {['curto', 'medio', 'longo'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
-                      return <td key={p} className="r bold">-{BRL(proj.hospitais * proj.custo * 12)}</td>
+                      return <td key={p} className="r bold">-{BRL(proj.custo * 12)}</td>
                     })}
                   </tr>
                   <tr className="total">
@@ -693,7 +693,7 @@ export default function Dashboard() {
                     {['curto', 'medio', 'longo'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
                       const rec = proj.hospitais * proj.ticket * 12;
-                      const cst = proj.hospitais * proj.custo * 12;
+                      const cst = proj.custo * 12;
                       return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{BRL(rec - cst)}</td>
                     })}
                   </tr>
