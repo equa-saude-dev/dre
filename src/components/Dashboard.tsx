@@ -312,10 +312,13 @@ export default function Dashboard() {
   );
   const TooltipBox = ({ field }: { field: string }) => tooltip === field ? (<div style={{ fontSize: '.75rem', color: 'var(--txm)', background: 'var(--sur2)', border: '1px solid var(--bor)', borderRadius: '.5rem', padding: '.5rem .75rem', marginTop: '.25rem', lineHeight: 1.5 }}>{FIELD_HINTS[field]}</div>) : null;
 
-  const addMilestone = () => { const last = state.phases.reduce((m, p) => Math.max(m, p.endM), 0); handleUpdate({ phases: [...state.phases, { id: uid(), name: `M${state.phases.length + 1} · Novo Milestone`, startM: last + 1, endM: last + 6, objective: '', kr: '', initiatives: [{ id: uid(), name: 'Nova iniciativa', area: 'produto', subarea: '', pct: 0, kpis: [{ id: uid(), metric: 'Nova métrica', target: 'Meta' }] }] }] }); };
+  const addMilestone = () => { const last = state.phases.reduce((m, p) => Math.max(m, p.endM), 0); handleUpdate({ phases: [...state.phases, { id: uid(), name: `M${state.phases.length + 1} · Novo Milestone`, startM: last + 1, endM: last + 6, objective: '', kr: '', krs: [{ id: uid(), text: 'Novo KR' }], initiatives: [{ id: uid(), name: 'Nova iniciativa', area: 'produto', subarea: '', pct: 0, kpis: [{ id: uid(), metric: 'Nova métrica', target: 'Meta', initiative: '' }] }] }] }); };
   const delMilestone = (pid: number) => handleUpdate({ phases: state.phases.filter(p => p.id !== pid) });
   const updPhase = (pid: number, patch: Partial<Phase>) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, ...patch } : p) });
-  const addInitiative = (pid: number) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, initiatives: [...p.initiatives, { id: uid(), name: 'Nova iniciativa', area: 'produto', subarea: '', pct: 0, kpis: [{ id: uid(), metric: 'Nova métrica', target: 'Meta' }] }] } : p) });
+  const addKR = (pid: number) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, krs: [...(p.krs || []), { id: uid(), text: '' }] } : p) });
+  const delKR = (pid: number, krid: number) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, krs: (p.krs || []).filter(k => k.id !== krid) } : p) });
+  const updKR = (pid: number, krid: number, text: string) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, krs: (p.krs || []).map(k => k.id === krid ? { ...k, text } : k) } : p) });
+  const addInitiative = (pid: number) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, initiatives: [...p.initiatives, { id: uid(), name: 'Nova iniciativa', area: 'produto', subarea: '', pct: 0, kpis: [{ id: uid(), metric: 'Nova métrica', target: 'Meta', initiative: '' }] }] } : p) });
   const delInitiative = (pid: number, iid: number) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, initiatives: p.initiatives.filter(i => i.id !== iid) } : p) });
   const updInitiative = (pid: number, iid: number, patch: Partial<Initiative>) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, initiatives: p.initiatives.map(i => i.id === iid ? { ...i, ...patch } : i) } : p) });
   const addKPI = (pid: number, iid: number) => handleUpdate({ phases: state.phases.map(p => p.id === pid ? { ...p, initiatives: p.initiatives.map(i => i.id === iid ? { ...i, kpis: [...i.kpis, { id: uid(), metric: 'Nova métrica', target: 'Meta' }] } : i) } : p) });
@@ -355,7 +358,6 @@ export default function Dashboard() {
         <div className="hero-left">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span className="app-title">Equa — DRE</span>
-            <span style={{ fontSize: '0.7rem', background: '#14a08c', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>V1.1 - Supabase</span>
             {isSyncing && <span style={{ fontSize: '0.7rem', color: 'var(--txm)', fontStyle: 'italic' }}>🔄 Sincronizando...</span>}
           </div>
           <span className="hero-desc">Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.</span>
@@ -373,7 +375,7 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs">
-        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['dre','DRE'],['cenarios','Cenários']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['receita','Projeção de receita'],['dre','DRE'],['cenarios','Cenários']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
@@ -538,8 +540,23 @@ export default function Dashboard() {
                 </div>
 
                 <div className="field-v2" style={{ marginTop: '1rem' }}>
-                  <label>KEY RESULT</label>
-                  <textarea value={ph.kr} onChange={(e) => updPhase(ph.id, { kr: e.target.value })} placeholder="Ex: MRR ≥ R$ 200k, Churn < 5%" />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <label style={{ margin: 0 }}>KEY RESULTS</label>
+                    <button className="btn-sm outline" onClick={() => addKR(ph.id)}>+ Adicionar KR</button>
+                  </div>
+                  {(!ph.krs || ph.krs.length === 0) && (
+                    <textarea value={ph.kr} onChange={(e) => updPhase(ph.id, { kr: e.target.value })} placeholder="Ex: MRR ≥ R$ 200k, Churn < 5%" style={{ marginBottom: '0.5rem' }} />
+                  )}
+                  {ph.krs && ph.krs.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {ph.krs.map(kr => (
+                        <div key={kr.id} style={{ display: 'flex', gap: '0.5rem' }}>
+                          <input style={{ flex: 1 }} value={kr.text} onChange={(e) => updKR(ph.id, kr.id, e.target.value)} placeholder="Descrição do Key Result" />
+                          <button className="btn-icon danger" onClick={() => delKR(ph.id, kr.id)}>✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="initiatives-list">
@@ -571,15 +588,17 @@ export default function Dashboard() {
                       </div>
 
                       <div className="kpi-nested-list">
-                        <div className="kpi-grid-header">
+                        <div className="kpi-grid-header" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 40px' }}>
+                          <span>AÇÃO / INICIATIVA</span>
                           <span>MÉTRICA</span>
                           <span>META</span>
                           <span></span>
                         </div>
                         {(ini.kpis || []).map(k => (
-                          <div key={k.id} className="kpi-row-v2">
-                            <input value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} />
-                            <input value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} />
+                          <div key={k.id} className="kpi-row-v2" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 40px' }}>
+                            <input value={k.initiative || ''} onChange={(e) => updKPI(ph.id, ini.id, k.id, { initiative: e.target.value })} placeholder="Ex: Desenvolver feature X" />
+                            <input value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} placeholder="Ex: Taxa de conversão" />
+                            <input value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} placeholder="Ex: > 10%" />
                             <button className="btn-icon danger" onClick={() => delKPI(ph.id, ini.id, k.id)}>✕</button>
                           </div>
                         ))}
@@ -591,6 +610,20 @@ export default function Dashboard() {
               </div>
             ))}
             <button className="btn pri" onClick={addMilestone}>+ Adicionar Milestone</button>
+          </div></div>
+        </section>
+      )}
+      {activeTab === 'receita' && (
+        <section className="tab-panel g1 active">
+          <div className="panel"><div className="ph"><h2>Projeção de Receita</h2></div><div className="pb">
+            <div className="tw"><table><thead><tr><th>Item</th>{dreData.map(d => <th key={d.m} className="r">M{d.m}</th>)}<th className="r">Total</th></tr></thead><tbody>
+              <DRERow label="Hospitais ativos" data={dreData} k="h" />
+              <DRERow label="Subscription (Core)" data={dreData} k="rSub" brl />
+              <DRERow label="Performance Fee (Core)" data={dreData} k="rPerf" brl />
+              <DRERow label="Equa Pay (Antecipação)" data={dreData} k="rEquaPay" brl />
+              <DRERow label="Revenue Share" data={dreData} k="rRevShare" brl />
+              <DRERow label="Receita Total" data={dreData} k="rec" brl bold dtotal color="var(--pri)" />
+            </tbody></table></div>
           </div></div>
         </section>
       )}

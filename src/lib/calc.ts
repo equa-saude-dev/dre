@@ -11,6 +11,12 @@ export interface KPI {
   id: number;
   metric: string;
   target: string;
+  initiative?: string;
+}
+
+export interface KeyResult {
+  id: number;
+  text: string;
 }
 
 export interface Initiative {
@@ -29,6 +35,7 @@ export interface Phase {
   endM: number;
   objective: string;
   kr: string;
+  krs?: KeyResult[];
   initiatives: Initiative[];
 }
 
