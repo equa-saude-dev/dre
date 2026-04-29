@@ -151,9 +151,11 @@ function calcScenario(s: Scenario, state: DREState, meses: number) {
   for (let m = 1; m <= meses; m++) {
     let h = 0;
     if (m >= ini) { const rl = meses - ini + 1; h = rl > 0 ? Math.min(s.hFim, Math.ceil((m - ini + 1) * s.hFim / rl)) : s.hFim; }
-    const rec = (m >= ini ? h * (s.sub + s.perf) : 0)
-      + (m >= state.revShareIni ? h * state.equaPayVol * (state.equaPayTaxa / 100) : 0)
-      + (m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0);
+    const rSub = m >= ini ? h * (state.piloto > 0 ? state.piloto : state.sub) : 0;
+    const rPerf = (m >= ini && state.piloto === 0) ? h * state.perf : 0;
+    const rEquaPay = m >= state.revShareIni ? h * state.equaPayVol * (state.equaPayTaxa / 100) : 0;
+    const rRevShare = m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0;
+    const rec = rSub + rPerf + rEquaPay + rRevShare;
     let c = 0;
     if (state.areaCosts) {
       Object.values(state.areaCosts).forEach(area => {
