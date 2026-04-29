@@ -127,7 +127,7 @@ export function calculateDRE(state: DREState): { dreData: MonthData[]; totals: D
     const rSub = m >= state.inicioRec ? h * (state.piloto > 0 ? state.piloto : state.sub) : 0;
     const rPerf = (m >= state.inicioRec && state.piloto === 0) ? h * state.perf : 0;
     const rEquaPay = m >= state.revShareIni ? h * state.equaPayVol * (state.equaPayTaxa / 100) : 0;
-    const rRevShare = m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0;
+    const rRevShare = m >= state.revShareIni ? h * state.equaPayVol * (state.revSharePct / 100) : 0;
     const rec = rSub + rPerf + rEquaPay + rRevShare;
 
     let cost = 0;
@@ -182,7 +182,7 @@ export function calcScenarioResults(s: Scenario, state: DREState, meses: number)
     const rSub = m >= state.inicioRec ? h * (state.piloto > 0 ? state.piloto : s.sub) : 0;
     const rPerf = (m >= state.inicioRec && state.piloto === 0) ? h * s.perf : 0;
     const rEquaPay = m >= state.revShareIni ? h * state.equaPayVol * (state.equaPayTaxa / 100) : 0;
-    const rRevShare = m >= state.revShareIni ? h * state.revShareBase * (state.revSharePct / 100) : 0;
+    const rRevShare = m >= state.revShareIni ? h * state.equaPayVol * (state.revSharePct / 100) : 0;
     const rec = rSub + rPerf + rEquaPay + rRevShare;
     
     let c = 0;

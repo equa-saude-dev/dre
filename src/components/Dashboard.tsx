@@ -452,11 +452,10 @@ export default function Dashboard() {
             <div className="fields sub2" style={{ marginTop: '.875rem' }}><PHintField label="Início 1ª receita (mês)" field="inicioRec" value={getPrem('inicioRec') as number} onChange={(v: string) => setPremField('inicioRec', Number(v))} hint={FIELD_HINTS.inicioRec} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} /></div>
             
             <div className="section-divider" />
-            <span className="lbl">🏥 Receita Core — Glosas</span>
-            <div className="fields sub3">
+            <span className="lbl">🏥 Receita Core</span>
+            <div className="fields sub2">
               <PHintField label="Subscription / contrato (R$)" field="sub" value={getPrem('sub') as number} onChange={(v: string) => setPremField('sub', Number(v))} hint={FIELD_HINTS.sub} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <PHintField label="Performance Fee / contrato (R$)" field="perf" value={getPrem('perf') as number} onChange={(v: string) => setPremField('perf', Number(v))} hint={FIELD_HINTS.perf} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
-              <div className="field"><label>Receita piloto / mês (R$) <InfoBtn field="piloto" /></label><input type="number" value={getPrem('piloto') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('piloto', Number(e.target.value))} /><small>0 = piloto gratuito</small><TooltipBox field="piloto" /></div>
             </div>
             
             <div className="section-divider" />
@@ -468,9 +467,8 @@ export default function Dashboard() {
             
             <div className="section-divider" />
             <span className="lbl">📊 Revenue Share</span>
-            <div className="fields sub3">
+            <div className="fields sub2">
               <div className="field"><label>Revenue Share (%) <InfoBtn field="revSharePct" /></label><input type="number" step={0.5} value={getPrem('revSharePct') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('revSharePct', Number(e.target.value))} /><small>% sobre o faturamento antecipado</small><TooltipBox field="revSharePct" /></div>
-              <PHintField label="Faturamento do hospital / hosp / mês (R$)" field="revShareBase" value={getPrem('revShareBase') as number} onChange={(v: string) => setPremField('revShareBase', Number(v))} hint={FIELD_HINTS.revShareBase} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <PHintField label="Mês de início (Equa Pay + Rev. Share)" field="revShareIni" value={getPrem('revShareIni') as number} onChange={(v: string) => setPremField('revShareIni', Number(v))} hint={FIELD_HINTS.revShareIni} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
             </div>
             <div className="actions" style={{ marginTop: '1.5rem' }}><button className="btn pri" onClick={applyPremissas} style={{ opacity: premDirty ? 1 : 0.55 }}>✓ Aplicar premissas</button></div>
