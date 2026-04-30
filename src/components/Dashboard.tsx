@@ -651,7 +651,7 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
-                      const term = proj[keyP];
+                      const term = proj[keyP] || DEFAULT_STATE.projecao![keyP];
                       return <td key={p} className="r"><input type="number" className="scen-input" value={term.hospitais} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, hospitais: Number(e.target.value) } } })} /></td>;
                     })}
                   </tr>
@@ -660,7 +660,7 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
-                      const term = proj[keyP];
+                      const term = proj[keyP] || DEFAULT_STATE.projecao![keyP];
                       return <td key={p} className="r"><input type="number" className="scen-input" value={term.ticket} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, ticket: Number(e.target.value) } } })} /></td>;
                     })}
                   </tr>
@@ -669,7 +669,7 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
-                      const term = proj[keyP];
+                      const term = proj[keyP] || DEFAULT_STATE.projecao![keyP];
                       return <td key={p} className="r"><input type="number" className="scen-input" value={term.custo} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, custo: Number(e.target.value) } } })} /></td>;
                     })}
                   </tr>
