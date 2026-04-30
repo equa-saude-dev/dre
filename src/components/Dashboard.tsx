@@ -405,10 +405,17 @@ export default function Dashboard() {
         </div>
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
-      <div className="tabs">
+      <div className="tabs hide-on-mobile">
         {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
+      </div>
+      <div className="mobile-tabs-container hide-on-desktop">
+        <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)} className="mobile-tabs-select">
+          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+            <option key={k} value={k}>{l}</option>
+          ))}
+        </select>
       </div>
       {activeTab === 'resumo' && (
         <section className="tab-panel active g2">
@@ -585,7 +592,7 @@ export default function Dashboard() {
                     </div>
                     <button className="btn-sm pri" onClick={() => addCost(area)}>+ Item</button>
                   </div>
-                  <div className="custo-body">
+                  <div className="custo-body tw">
                     <table className="cost-table">
                       <thead>
                         <tr>
