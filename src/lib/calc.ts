@@ -46,9 +46,10 @@ export interface ProjecaoTermo {
 }
 
 export interface Projecao {
-  curto: ProjecaoTermo;
-  medio: ProjecaoTermo;
-  longo: ProjecaoTermo;
+  ano1: ProjecaoTermo;
+  ano2: ProjecaoTermo;
+  ano3: ProjecaoTermo;
+  ano4: ProjecaoTermo;
 }
 
 export interface Scenario {
