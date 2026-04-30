@@ -391,7 +391,7 @@ export default function Dashboard() {
             <span className="app-title" style={{ marginLeft: '4px', borderLeft: '1px solid var(--bor)', paddingLeft: '14px' }}>Business</span>
             {isSyncing && <span style={{ fontSize: '0.7rem', color: 'var(--txm)', fontStyle: 'italic' }}>🔄 Sincronizando...</span>}
           </div>
-          <span className="hero-desc">Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.</span>
+
           
           {loadError && (
             <div style={{ marginTop: '10px', padding: '10px', background: 'rgba(255,165,0,0.1)', border: '1px solid orange', borderRadius: '5px', color: 'orange', fontSize: '0.8rem' }}>
@@ -406,7 +406,7 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs">
-        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['dre','DRE'],['cenarios','Cenários'],['receita','Projeção de receita']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['dre','DRE'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
@@ -747,9 +747,12 @@ export default function Dashboard() {
               </table>
             </div>
           </div></div>
-
+        </section>
+      )}
+      {activeTab === 'modelo' && (
+        <section className="tab-panel active g1">
           <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Modelo de negócio e qualidade da receita</h2></div><div className="pb">
-            <p className="note" style={{ marginBottom: '1.5rem' }}>A Equa inicia com um modelo híbrido, combinando subscription e performance fee. O performance fee reduz a fricção comercial e alinha a remuneração ao resultado financeiro do hospital. Ao longo do tempo, a estratégia é aumentar a participação da subscription, tornando a receita mais previsível, recorrente e valorizável.<br/><br/><strong>Nota:</strong> Quanto maior a proporção de subscription, maior a previsibilidade da receita e a defensabilidade de múltiplos de valuation.</p>
+            <p className="note" style={{ marginBottom: '1.5rem' }}>A Equa inicia com um modelo híbrido, combinando subscription e performance fee. O performance fee reduz a fricção comercial e alinha a remuneração ao resultado financeiro do hospital. Ao longo do tempo, a estratégia é aumentar a participação da subscription, tornando a receita mais previsível, recorrente e valorizável.</p>
             <div className="tw">
               <table className="cost-table">
                 <thead>
@@ -918,8 +921,11 @@ export default function Dashboard() {
             </div>
 
           </div></div>
-
-          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Retorno potencial para investidores</h2></div><div className="pb">
+        </section>
+      )}
+      {activeTab === 'receita' && (
+        <section className="tab-panel active g1">
+          <div className="panel"><div className="ph"><h2>Retorno potencial para investidores</h2></div><div className="pb">
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Rodada atual</h3>
             <div className="fields sub2">
               <div className="field"><label>Captação (R$)</label><input type="number" value={state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, invest_cap: Number(e.target.value) } })} /></div>
