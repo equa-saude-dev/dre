@@ -481,6 +481,59 @@ export default function Dashboard() {
             </div>
           </div></div>
 
+          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Retorno potencial para investidores (MOIC)</h2></div><div className="pb-nopad">
+            <div style={{ padding: '1.25rem 1.25rem 0' }}>
+              {(() => {
+                const xsProj = ['Ano 2', 'Ano 3', 'Ano 4'];
+                
+                const cap = state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap!;
+                const pre = state.projecao?.invest_pre ?? DEFAULT_STATE.projecao!.invest_pre!;
+                const post = cap + pre;
+                const part = post > 0 ? (cap / post) : 0;
+                const diluicao = (state.projecao?.diluicao ?? DEFAULT_STATE.projecao!.diluicao!) / 100;
+                const multBase = state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base!;
+                const multSub = state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub!;
+                const multPerf = state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf!;
+                const valType = state.projecao?.val_type ?? 'weighted';
+
+                const moicSemDiluicao = xsProj.map((_, i) => {
+                  const p = ['ano2', 'ano3', 'ano4'][i];
+                  const proj = state.projecao?.[p as "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano2" | "ano3" | "ano4"];
+                  const arr = proj.hospitaisFim * proj.ticket * 12;
+                  let val = 0;
+                  if (valType === 'weighted') {
+                    val = (arr * ((proj.subPct ?? 0) / 100) * multSub) + (arr * ((proj.perfPct ?? 0) / 100) * multPerf);
+                  } else {
+                    val = arr * multBase;
+                  }
+                  const returnVal = val * part;
+                  return cap > 0 ? returnVal / cap : 0;
+                });
+
+                const moicComDiluicao = xsProj.map((_, i) => {
+                  const p = ['ano2', 'ano3', 'ano4'][i];
+                  const proj = state.projecao?.[p as "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano2" | "ano3" | "ano4"];
+                  const arr = proj.hospitaisFim * proj.ticket * 12;
+                  let val = 0;
+                  if (valType === 'weighted') {
+                    val = (arr * ((proj.subPct ?? 0) / 100) * multSub) + (arr * ((proj.perfPct ?? 0) / 100) * multPerf);
+                  } else {
+                    val = arr * multBase;
+                  }
+                  const returnVal = val * diluicao;
+                  return cap > 0 ? returnVal / cap : 0;
+                });
+
+                return (
+                  <Plot data={[
+                    { type: 'bar', name: 'Sem diluição', x: xsProj, y: moicSemDiluicao, marker: { color: '#7C5CFC' }, text: moicSemDiluicao.map(v => v.toFixed(1) + 'x'), textposition: 'auto' },
+                    { type: 'bar', name: 'Com diluição', x: xsProj, y: moicComDiluicao, marker: { color: '#A78BFA' }, text: moicComDiluicao.map(v => v.toFixed(1) + 'x'), textposition: 'auto' },
+                  ] as any} layout={getLayout({ barmode: 'group', margin: { t: 20, r: 10, b: 40, l: 40 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'MOIC (x)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+                );
+              })()}
+            </div>
+          </div></div>
+
         </section>
       )}
       {activeTab === 'premissas' && (
