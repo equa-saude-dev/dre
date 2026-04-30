@@ -388,14 +388,13 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
   border-radius: 0.75rem;
   padding: 1rem;
   margin-top: 0.75rem;
-  overflow-x: auto;
 }
 .kpi-grid-header {
   display: grid;
-  grid-template-columns: 1fr 1fr 40px;
   gap: 1rem;
   margin-bottom: 0.5rem;
   padding: 0 0.5rem;
+  width: max-content;
 }
 .kpi-grid-header span {
   font-size: 0.65rem;
@@ -405,9 +404,9 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
 }
 .kpi-row-v2 {
   display: grid;
-  grid-template-columns: 1fr 1fr 40px;
   gap: 1rem;
   margin-bottom: 0.5rem;
+  width: max-content;
 }
 .kpi-row-v2 input, .kpi-row-v2 textarea {
   background: var(--input-bg);
