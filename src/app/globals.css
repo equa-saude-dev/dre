@@ -74,6 +74,18 @@ input,button,select,textarea{font:inherit}
 .app{max-width:1440px;margin:0 auto;padding:1.5rem}
 .hero{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--div)}
 .app-title{font-size:1.4rem;font-weight:700;letter-spacing:-.02em}
+.view-mode-banner {
+  background: var(--sur2);
+  color: var(--txm);
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border: 1px solid var(--bor);
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--pri);
+}
 .hero-desc{color:var(--txm);font-size:.875rem;margin-top:.3rem}
 .hero-left{display:flex;flex-direction:column}
 
@@ -465,7 +477,15 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
     min-height: 38px;
   }
   .kpi-grid-header, .kpi-row-v2 {
-    min-width: 600px;
+    min-width: 650px;
+  }
+  .tw::-webkit-scrollbar {
+    height: 4px;
+    display: block !important;
+  }
+  .tw::-webkit-scrollbar-thumb {
+    background: var(--pri);
+    border-radius: 10px;
   }
   .hide-on-mobile { display: none !important; }
   .hide-on-desktop { display: block !important; }

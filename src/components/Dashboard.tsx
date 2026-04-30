@@ -380,7 +380,7 @@ export default function Dashboard() {
   return (
     <div className={`app ${isReadOnly ? 'readonly-mode' : ''}`}>
       {isReadOnly && (
-        <div style={{ background: 'var(--sur2)', color: 'var(--txm)', padding: '0.4rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.75rem', borderBottom: '1px solid var(--bor)' }}>
+        <div className="view-mode-banner">
           Modo de Visualização - Edições desativadas
         </div>
       )}
@@ -701,12 +701,12 @@ export default function Dashboard() {
                           <input type="number" value={ini.pct} onChange={(e) => updInitiative(ph.id, ini.id, { pct: Number(e.target.value) })} />
                         </div>
                         <div className="init-actions">
-                          <button className="btn-sm pri" onClick={() => addKPI(ph.id, ini.id)}>+ KPI</button>
+                  <button className="btn-sm pri" onClick={() => addKPI(ph.id, ini.id)}>+ KPI</button>
                           <button className="btn-icon danger" onClick={() => delInitiative(ph.id, ini.id)}>✕</button>
                         </div>
                       </div>
 
-                      <div className="kpi-nested-list">
+                      <div className="kpi-nested-list tw">
                         <div className="kpi-grid-header" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 40px' }}>
                           <span>AÇÃO / INICIATIVA</span>
                           <span>MÉTRICA</span>
