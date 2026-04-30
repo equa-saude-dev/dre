@@ -86,10 +86,10 @@ const DEFAULT_STATE: DREState = {
     { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
   projecao: {
-    ano1: { hospitais: 3, ticket: 35000, custo: 60000 },
-    ano2: { hospitais: 30, ticket: 35000, custo: 30000 },
-    ano3: { hospitais: 90, ticket: 35000, custo: 9000 },
-    ano4: { hospitais: 150, ticket: 40000, custo: 8000 }
+    ano1: { hospitaisFim: 3, hospitaisMedios: 2, ticket: 35000, custo: 60000 },
+    ano2: { hospitaisFim: 15, hospitaisMedios: 10, ticket: 40000, custo: 250000 },
+    ano3: { hospitaisFim: 45, hospitaisMedios: 35, ticket: 45000, custo: 500000 },
+    ano4: { hospitaisFim: 90, hospitaisMedios: 75, ticket: 50000, custo: 1000000 }
   }
 };
 
@@ -647,12 +647,21 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Hospitais Ativos</strong></td>
+                    <td><strong>Hospitais ativos no fim do ano</strong></td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
                       const term = proj[keyP] || DEFAULT_STATE.projecao![keyP];
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={term.hospitais} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, hospitais: Number(e.target.value) } } })} /></td>;
+                      return <td key={p} className="r"><input type="number" className="scen-input" value={term.hospitaisFim} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, hospitaisFim: Number(e.target.value) } } })} /></td>;
+                    })}
+                  </tr>
+                  <tr>
+                    <td><strong>Hospitais médios faturando no ano</strong></td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
+                      const proj = state.projecao || DEFAULT_STATE.projecao!;
+                      const term = proj[keyP] || DEFAULT_STATE.projecao![keyP];
+                      return <td key={p} className="r"><input type="number" className="scen-input" value={term.hospitaisMedios} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...term, hospitaisMedios: Number(e.target.value) } } })} /></td>;
                     })}
                   </tr>
                   <tr>
@@ -675,26 +684,44 @@ export default function Dashboard() {
                   </tr>
                   <tr style={{ height: '1rem' }}><td colSpan={5}></td></tr>
                   <tr className="subtotal">
-                    <td>Receita Anual Estimada</td>
+                    <td>Receita reconhecida no ano</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
-                      return <td key={p} className="r bold">{BRL(proj.hospitais * proj.ticket * 12)}</td>
+                      return <td key={p} className="r bold">{BRL(proj.hospitaisMedios * proj.ticket * 12)}</td>
+                    })}
+                  </tr>
+                  <tr className="subtotal">
+                    <td>ARR de saída</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
                   </tr>
                   <tr className="subtotal" style={{ color: 'var(--war)' }}>
-                    <td>Custo Operacional Anual Estimado</td>
+                    <td>Custo operacional anual</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
                       return <td key={p} className="r bold">-{BRL(proj.custo * 12)}</td>
                     })}
                   </tr>
                   <tr className="total">
-                    <td style={{ color: 'var(--pri)' }}>Margem Bruta Operacional Anual</td>
+                    <td style={{ color: 'var(--pri)' }}>Margem operacional anual</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
-                      const rec = proj.hospitais * proj.ticket * 12;
+                      const rec = proj.hospitaisMedios * proj.ticket * 12;
                       const cst = proj.custo * 12;
                       return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{BRL(rec - cst)}</td>
+                    })}
+                  </tr>
+                  <tr className="subtotal">
+                    <td style={{ color: 'var(--pri)' }}>Margem operacional %</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const rec = proj.hospitaisMedios * proj.ticket * 12;
+                      const cst = proj.custo * 12;
+                      const margin = rec - cst;
+                      const pct = rec > 0 ? (margin / rec) * 100 : 0;
+                      return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{pct.toFixed(1).replace('.', ',')}%</td>
                     })}
                   </tr>
                 </tbody>

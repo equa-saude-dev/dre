@@ -40,7 +40,8 @@ export interface Phase {
 }
 
 export interface ProjecaoTermo {
-  hospitais: number;
+  hospitaisFim: number;
+  hospitaisMedios: number;
   ticket: number;
   custo: number;
 }
