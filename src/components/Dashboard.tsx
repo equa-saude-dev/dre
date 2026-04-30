@@ -28,6 +28,8 @@ const FIELD_HINTS: Record<string, string> = {
   jurPct:       'Porcentagem fixa de custo jurídico/administrativo aplicada como base. Iniciativas de área jurídico somam por cima.',
   caixaPct:     'Reserva de caixa segregada do modelo financeiro. Não entra no cálculo do resultado operacional.',
   revMult:      'Múltiplo de ARR (Annual Recurring Revenue) usado para calcular o valuation por milestone. Valuation = ARR × Múltiplo.',
+  projHospFim:  'Clientes contratados ao final do período. Usado para cálculo de MRR e ARR de saída.',
+  projHospMedios: 'Média de hospitais efetivamente gerando receita ao longo do ano. Usado para cálculo da receita reconhecida.'
 };
 
 const DEFAULT_STATE: DREState = {
@@ -647,7 +649,7 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Hospitais ativos no fim do ano</strong></td>
+                    <td style={{ position: 'relative' }}><strong>Hospitais contratados no fim do ano <InfoBtn field="projHospFim" /></strong><TooltipBox field="projHospFim" /></td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
@@ -656,7 +658,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr>
-                    <td><strong>Hospitais médios faturando no ano</strong></td>
+                    <td style={{ position: 'relative' }}><strong>Hospitais médios faturando no ano <InfoBtn field="projHospMedios" /></strong><TooltipBox field="projHospMedios" /></td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
