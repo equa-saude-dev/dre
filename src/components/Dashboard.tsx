@@ -635,11 +635,11 @@ export default function Dashboard() {
                 <div className="okr-main-fields">
                   <div className="field-v2">
                     <label>NOME DO MILESTONE</label>
-                    <textarea rows={2} style={{ minHeight: '60px', resize: 'vertical' }} value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
+                    <textarea rows={2} style={{ minHeight: '50px', resize: 'vertical' }} value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
                   </div>
                   <div className="field-v2">
                     <label>OBJETIVO</label>
-                    <textarea rows={2} style={{ minHeight: '60px', resize: 'vertical' }} value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
+                    <textarea rows={5} style={{ minHeight: '100px', resize: 'vertical' }} value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
                   </div>
                   <div className="field-v2-sm">
                     <label>MÊS INÍCIO</label>
@@ -708,9 +708,9 @@ export default function Dashboard() {
                         </div>
                         {(ini.kpis || []).map(k => (
                           <div key={k.id} className="kpi-row-v2" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 40px' }}>
-                            <input value={k.initiative || ''} onChange={(e) => updKPI(ph.id, ini.id, k.id, { initiative: e.target.value })} placeholder="Ex: Desenvolver feature X" />
-                            <input value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} placeholder="Ex: Taxa de conversão" />
-                            <input value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} placeholder="Ex: > 10%" />
+                            <textarea rows={2} style={{ resize: 'vertical' }} value={k.initiative || ''} onChange={(e) => updKPI(ph.id, ini.id, k.id, { initiative: e.target.value })} placeholder="Ex: Desenvolver feature X" />
+                            <textarea rows={2} style={{ resize: 'vertical' }} value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} placeholder="Ex: Taxa de conversão" />
+                            <textarea rows={2} style={{ resize: 'vertical' }} value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} placeholder="Ex: > 10%" />
                             <button className="btn-icon danger" onClick={() => delKPI(ph.id, ini.id, k.id)}>✕</button>
                           </div>
                         ))}
