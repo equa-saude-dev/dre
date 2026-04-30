@@ -51,6 +51,12 @@ export interface Projecao {
   ano2: ProjecaoTermo;
   ano3: ProjecaoTermo;
   ano4: ProjecaoTermo;
+  invest_cap?: number;
+  invest_pre?: number;
+  mult_cons?: number;
+  mult_base?: number;
+  mult_otim?: number;
+  diluicao?: number;
 }
 
 export interface Scenario {

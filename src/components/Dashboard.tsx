@@ -91,7 +91,13 @@ const DEFAULT_STATE: DREState = {
     ano1: { hospitaisFim: 3, hospitaisMedios: 2, ticket: 35000, custo: 60000 },
     ano2: { hospitaisFim: 15, hospitaisMedios: 10, ticket: 40000, custo: 250000 },
     ano3: { hospitaisFim: 45, hospitaisMedios: 35, ticket: 45000, custo: 500000 },
-    ano4: { hospitaisFim: 90, hospitaisMedios: 75, ticket: 50000, custo: 1000000 }
+    ano4: { hospitaisFim: 90, hospitaisMedios: 75, ticket: 50000, custo: 1000000 },
+    invest_cap: 500000,
+    invest_pre: 5500000,
+    mult_cons: 4,
+    mult_base: 6,
+    mult_otim: 8,
+    diluicao: 6.12
   }
 };
 
@@ -688,21 +694,21 @@ export default function Dashboard() {
                   <tr className="subtotal">
                     <td>Receita reconhecida no ano</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisMedios * proj.ticket * 12)}</td>
                     })}
                   </tr>
                   <tr className="subtotal" style={{ color: 'var(--war)' }}>
                     <td>Custo operacional anual</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">-{BRL(proj.custo * 12)}</td>
                     })}
                   </tr>
                   <tr className="total">
                     <td style={{ color: 'var(--pri)' }}>Margem operacional anual</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const rec = proj.hospitaisMedios * proj.ticket * 12;
                       const cst = proj.custo * 12;
                       return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{BRL(rec - cst)}</td>
@@ -711,7 +717,7 @@ export default function Dashboard() {
                   <tr className="subtotal">
                     <td style={{ color: 'var(--pri)' }}>Margem operacional %</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const rec = proj.hospitaisMedios * proj.ticket * 12;
                       const cst = proj.custo * 12;
                       const margin = rec - cst;
@@ -722,16 +728,184 @@ export default function Dashboard() {
                   <tr className="subtotal">
                     <td>MRR de saída</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket)}</td>
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>ARR de saída</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div></div>
+
+          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Retorno potencial para investidores</h2></div><div className="pb">
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Rodada atual</h3>
+            <div className="fields sub2">
+              <div className="field"><label>Captação (R$)</label><input type="number" value={state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, invest_cap: Number(e.target.value) } })} /></div>
+              <div className="field"><label>Valuation pre-money (R$)</label><input type="number" value={state.projecao?.invest_pre ?? DEFAULT_STATE.projecao!.invest_pre} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, invest_pre: Number(e.target.value) } })} /></div>
+            </div>
+            {(() => {
+              const cap = state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap!;
+              const pre = state.projecao?.invest_pre ?? DEFAULT_STATE.projecao!.invest_pre!;
+              const post = cap + pre;
+              const part = post > 0 ? (cap / post) * 100 : 0;
+              return (
+                <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', background: 'var(--bg-card)', padding: '1rem', borderRadius: '8px' }}>
+                  <div><span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Valuation post-money</span><div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{BRL(post)}</div></div>
+                  <div><span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Participação da rodada</span><div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--pri)' }}>{part.toFixed(2).replace('.', ',')}%</div></div>
+                </div>
+              );
+            })()}
+
+            <div className="section-divider" />
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Cenários de valuation por ARR</h3>
+            <div className="fields sub3" style={{ marginBottom: '1rem' }}>
+              <div className="field"><label>Múltiplo conservador</label><input type="number" value={state.projecao?.mult_cons ?? DEFAULT_STATE.projecao!.mult_cons} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_cons: Number(e.target.value) } })} /></div>
+              <div className="field"><label>Múltiplo base</label><input type="number" value={state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_base: Number(e.target.value) } })} /></div>
+              <div className="field"><label>Múltiplo otimista</label><input type="number" value={state.projecao?.mult_otim ?? DEFAULT_STATE.projecao!.mult_otim} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_otim: Number(e.target.value) } })} /></div>
+            </div>
+            
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>CENÁRIO VALUATION</th>
+                    <th className="r">2 ANOS</th>
+                    <th className="r">3 ANOS</th>
+                    <th className="r">4 ANOS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="subtotal">
+                    <td>ARR de saída</td>
+                    {['ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
+                    })}
+                  </tr>
+                  <tr>
+                    <td>Conservador ({(state.projecao?.mult_cons ?? DEFAULT_STATE.projecao!.mult_cons)}x)</td>
+                    {['ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const mult = state.projecao?.mult_cons ?? DEFAULT_STATE.projecao!.mult_cons!;
+                      return <td key={p} className="r">{BRL(proj.hospitaisFim * proj.ticket * 12 * mult)}</td>
+                    })}
+                  </tr>
+                  <tr>
+                    <td>Base ({(state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base)}x)</td>
+                    {['ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const mult = state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base!;
+                      return <td key={p} className="r">{BRL(proj.hospitaisFim * proj.ticket * 12 * mult)}</td>
+                    })}
+                  </tr>
+                  <tr>
+                    <td>Otimista ({(state.projecao?.mult_otim ?? DEFAULT_STATE.projecao!.mult_otim)}x)</td>
+                    {['ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const mult = state.projecao?.mult_otim ?? DEFAULT_STATE.projecao!.mult_otim!;
+                      return <td key={p} className="r">{BRL(proj.hospitaisFim * proj.ticket * 12 * mult)}</td>
+                    })}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="section-divider" />
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Retorno potencial da rodada atual</h3>
+            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-end', marginBottom: '1.5rem' }}>
+              <div className="field" style={{ width: '250px' }}><label>Participação diluída estimada (%)</label><input type="number" step={0.1} value={state.projecao?.diluicao ?? DEFAULT_STATE.projecao!.diluicao} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, diluicao: Number(e.target.value) } })} /></div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--txm)', paddingBottom: '10px' }}>* Baseado no cenário de {(state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base)}x ARR</div>
+            </div>
+
+            {(() => {
+              const cap = state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap!;
+              const pre = state.projecao?.invest_pre ?? DEFAULT_STATE.projecao!.invest_pre!;
+              const post = cap + pre;
+              const part = post > 0 ? (cap / post) : 0;
+              const diluicao = (state.projecao?.diluicao ?? DEFAULT_STATE.projecao!.diluicao!) / 100;
+              const multBase = state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base!;
+
+              return (
+                <div className="tw">
+                  <table className="cost-table">
+                    <thead>
+                      <tr>
+                        <th>CENÁRIO DE DILUIÇÃO</th>
+                        <th className="r">2 ANOS</th>
+                        <th className="r">3 ANOS</th>
+                        <th className="r">4 ANOS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="subtotal">
+                        <td>Sem diluição ({(part * 100).toFixed(2).replace('.', ',')}%)</td>
+                        {['ano2', 'ano3', 'ano4'].map(p => {
+                          const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                          const val = proj.hospitaisFim * proj.ticket * 12 * multBase;
+                          const returnVal = val * part;
+                          const moic = cap > 0 ? returnVal / cap : 0;
+                          return <td key={p} className="r"><div>{BRL(returnVal)}</div><div style={{ fontSize: '0.8rem', color: 'var(--pri)', fontWeight: 'bold' }}>{moic.toFixed(1).replace('.', ',')}x</div></td>
+                        })}
+                      </tr>
+                      <tr className="subtotal">
+                        <td>Com diluição estimada ({(diluicao * 100).toFixed(2).replace('.', ',')}%)</td>
+                        {['ano2', 'ano3', 'ano4'].map(p => {
+                          const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                          const val = proj.hospitaisFim * proj.ticket * 12 * multBase;
+                          const returnVal = val * diluicao;
+                          const moic = cap > 0 ? returnVal / cap : 0;
+                          return <td key={p} className="r"><div>{BRL(returnVal)}</div><div style={{ fontSize: '0.8rem', color: 'var(--pri)', fontWeight: 'bold' }}>{moic.toFixed(1).replace('.', ',')}x</div></td>
+                        })}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+            <p className="note" style={{ marginTop: '1rem' }}>Cenários ilustrativos. Não representam promessa de liquidez, valuation futuro ou retorno garantido.</p>
+          </div></div>
+
+          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Opcionalidade estratégica futura</h2></div><div className="pb">
+            <p className="note" style={{ marginBottom: '1.5rem' }}>A Equa está sendo construída para se tornar uma infraestrutura crítica de inteligência financeira hospitalar. Caso execute bem, essa camada pode se tornar estratégica para diferentes categorias de players do setor.</p>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '25%' }}>CATEGORIA</th>
+                    <th>DESCRIÇÃO DO VALOR ESTRATÉGICO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>ERP / HIS hospitalar</strong></td>
+                    <td>Adiciona uma camada de IA e inteligência de receita ao fluxo operacional já instalado nos hospitais.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Plataformas de RCM / IA</strong></td>
+                    <td>Amplia cobertura em pré-faturamento, contratos e hospitais pequenos/médios.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Operadoras verticalizadas</strong></td>
+                    <td>Melhora margem, governança de receita e padronização financeira em redes próprias.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Grupos hospitalares</strong></td>
+                    <td>Reduz perdas, melhora previsibilidade de recebimento e padroniza cobrança entre unidades.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Auditorias / BPOs</strong></td>
+                    <td>Transforma serviço manual em produto escalável e melhora margem operacional.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Crédito em saúde</strong></td>
+                    <td>Usa inteligência sobre qualidade da conta e risco de glosa para precificar recebíveis hospitalares.</td>
                   </tr>
                 </tbody>
               </table>
