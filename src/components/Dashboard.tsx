@@ -387,7 +387,8 @@ export default function Dashboard() {
       <div className="hero">
         <div className="hero-left">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span className="app-title">Equa — DRE</span>
+            <img src="/equa-logo.png" alt="Equa" style={{ height: '32px' }} />
+            <span className="app-title" style={{ marginLeft: '4px', borderLeft: '1px solid var(--bor)', paddingLeft: '14px' }}>Business</span>
             {isSyncing && <span style={{ fontSize: '0.7rem', color: 'var(--txm)', fontStyle: 'italic' }}>🔄 Sincronizando...</span>}
           </div>
           <span className="hero-desc">Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.</span>
