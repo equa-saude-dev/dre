@@ -86,10 +86,10 @@ const DEFAULT_STATE: DREState = {
     { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
   projecao: {
-    ano1: { hospitaisFim: 1, hospitaisMedios: 1, ticket: 30000, custo: 70000 },
-    ano2: { hospitaisFim: 15, hospitaisMedios: 8, ticket: 40000, custo: 250000 },
-    ano3: { hospitaisFim: 45, hospitaisMedios: 28, ticket: 45000, custo: 500000 },
-    ano4: { hospitaisFim: 90, hospitaisMedios: 65, ticket: 50000, custo: 1000000 }
+    ano1: { hospitaisFim: 3, hospitaisMedios: 2, ticket: 35000, custo: 60000 },
+    ano2: { hospitaisFim: 15, hospitaisMedios: 10, ticket: 40000, custo: 250000 },
+    ano3: { hospitaisFim: 45, hospitaisMedios: 35, ticket: 45000, custo: 500000 },
+    ano4: { hospitaisFim: 90, hospitaisMedios: 75, ticket: 50000, custo: 1000000 }
   }
 };
 
@@ -656,7 +656,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr>
-                    <td><strong>Hospitais médios ativos no ano</strong></td>
+                    <td><strong>Hospitais médios faturando no ano</strong></td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao || DEFAULT_STATE.projecao!;
@@ -684,20 +684,6 @@ export default function Dashboard() {
                   </tr>
                   <tr style={{ height: '1rem' }}><td colSpan={5}></td></tr>
                   <tr className="subtotal">
-                    <td>MRR final do ano</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
-                      return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket)}</td>
-                    })}
-                  </tr>
-                  <tr className="subtotal">
-                    <td>ARR final do ano</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
-                      return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
-                    })}
-                  </tr>
-                  <tr className="subtotal">
                     <td>Receita reconhecida no ano</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
@@ -712,12 +698,37 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr className="total">
-                    <td style={{ color: 'var(--pri)' }}>Resultado operacional estimado</td>
+                    <td style={{ color: 'var(--pri)' }}>Margem operacional anual</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
                       const rec = proj.hospitaisMedios * proj.ticket * 12;
                       const cst = proj.custo * 12;
                       return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{BRL(rec - cst)}</td>
+                    })}
+                  </tr>
+                  <tr className="subtotal">
+                    <td style={{ color: 'var(--pri)' }}>Margem operacional %</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      const rec = proj.hospitaisMedios * proj.ticket * 12;
+                      const cst = proj.custo * 12;
+                      const margin = rec - cst;
+                      const pct = rec > 0 ? (margin / rec) * 100 : 0;
+                      return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{pct.toFixed(1).replace('.', ',')}%</td>
+                    })}
+                  </tr>
+                  <tr className="subtotal">
+                    <td>MRR de saída</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket)}</td>
+                    })}
+                  </tr>
+                  <tr className="subtotal">
+                    <td>ARR de saída</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const proj = state.projecao?.[p as keyof typeof state.projecao] || DEFAULT_STATE.projecao![p as keyof typeof DEFAULT_STATE.projecao];
+                      return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
                   </tr>
                 </tbody>
