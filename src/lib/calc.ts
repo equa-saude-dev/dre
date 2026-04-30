@@ -44,6 +44,8 @@ export interface ProjecaoTermo {
   hospitaisMedios: number;
   ticket: number;
   custo: number;
+  subPct?: number;
+  perfPct?: number;
 }
 
 export interface Projecao {
@@ -56,6 +58,9 @@ export interface Projecao {
   mult_cons?: number;
   mult_base?: number;
   mult_otim?: number;
+  mult_sub?: number;
+  mult_perf?: number;
+  val_type?: 'simple' | 'weighted';
   diluicao?: number;
 }
 
