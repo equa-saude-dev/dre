@@ -380,7 +380,7 @@ export default function Dashboard() {
   return (
     <div className={`app ${isReadOnly ? 'readonly-mode' : ''}`}>
       {isReadOnly && (
-        <div style={{ background: 'var(--war)', color: '#000', padding: '0.5rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.85rem' }}>
+        <div style={{ background: 'var(--sur2)', color: 'var(--txm)', padding: '0.4rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.75rem', borderBottom: '1px solid var(--bor)' }}>
           Modo de Visualização - Edições desativadas
         </div>
       )}
@@ -406,7 +406,7 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs">
-        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['dre','DRE'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
@@ -451,11 +451,41 @@ export default function Dashboard() {
               <Plot data={[{ type: 'scatter', mode: 'lines', name: 'Caixa acumulado', x: xs, y: dreData.map(d => d.caixa), fill: 'tozeroy', fillcolor: 'rgba(124,92,252,.1)', line: { color: '#7C5CFC', width: 2.5 } as any }] as any} layout={getLayout({ margin: { t: 10, r: 10, b: 40, l: 80 }, height: 220 }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
             </div>
           </div></div>
+          
+          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Projeção de receita</h2></div><div className="pb-nopad">
+            <div style={{ padding: '1.25rem 1.25rem 0' }}>
+              {(() => {
+                const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
+                const subData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  const rec = proj.hospitaisMedios * proj.ticket * 12;
+                  return rec * ((proj.subPct ?? 0) / 100);
+                });
+                const perfData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  const rec = proj.hospitaisMedios * proj.ticket * 12;
+                  return rec * ((proj.perfPct ?? 0) / 100);
+                });
+                const costData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  return proj.custo * 12;
+                });
+                return (
+                  <Plot data={[
+                    { type: 'bar', name: 'Subscription', x: xsProj, y: subData, marker: { color: '#7C5CFC' } },
+                    { type: 'bar', name: 'Perf. Fee', x: xsProj, y: perfData, marker: { color: '#A78BFA' } },
+                    { type: 'scatter', mode: 'lines', name: 'Custos', x: xsProj, y: costData, line: { color: '#964219', width: 2, dash: 'dot' } as any },
+                  ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 80 }, legend: { orientation: 'h', y: -0.15 }, height: 280 }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+                );
+              })()}
+            </div>
+          </div></div>
+
         </section>
       )}
       {activeTab === 'premissas' && (
         <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>Premissas da rodada</h2>{premDirty && <span style={{ fontSize: '.78rem', color: 'var(--war)', fontWeight: 600 }}>⚠ Alterações pendentes — clique em Aplicar</span>}</div><div className="pb">
+          <div className="panel"><div className="ph"><h2>Alocação do capital</h2>{premDirty && <span style={{ fontSize: '.78rem', color: 'var(--war)', fontWeight: 600 }}>⚠ Alterações pendentes — clique em Aplicar</span>}</div><div className="pb">
             <div className="fields sub4">
               <PHintField label="Captação (R$)" field="captacao" value={getPrem('captacao') as number} onChange={(v: string) => setPremField('captacao', Number(v))} hint={FIELD_HINTS.captacao} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
               <PHintField label="Equity %" field="equity" step={0.1} value={getPrem('equity') as number} onChange={(v: string) => setPremField('equity', Number(v))} hint={FIELD_HINTS.equity} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
@@ -552,11 +582,11 @@ export default function Dashboard() {
                 <div className="okr-main-fields">
                   <div className="field-v2">
                     <label>NOME DO MILESTONE</label>
-                    <input value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
+                    <textarea rows={2} style={{ minHeight: '60px', resize: 'vertical' }} value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
                   </div>
                   <div className="field-v2">
                     <label>OBJETIVO</label>
-                    <input value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
+                    <textarea rows={2} style={{ minHeight: '60px', resize: 'vertical' }} value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
                   </div>
                   <div className="field-v2-sm">
                     <label>MÊS INÍCIO</label>
