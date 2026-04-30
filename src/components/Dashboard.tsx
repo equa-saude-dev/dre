@@ -402,7 +402,7 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs">
-        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['receita','Projeção de receita'],['dre','DRE'],['cenarios','Cenários']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Premissas'],['roadmap','GTM / OKRs'],['dre','DRE'],['cenarios','Cenários'],['receita','Projeção de receita']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
@@ -899,10 +899,7 @@ export default function Dashboard() {
                     <td><strong>Grupos hospitalares</strong></td>
                     <td>Reduz perdas, melhora previsibilidade de recebimento e padroniza cobrança entre unidades.</td>
                   </tr>
-                  <tr>
-                    <td><strong>Auditorias / BPOs</strong></td>
-                    <td>Transforma serviço manual em produto escalável e melhora margem operacional.</td>
-                  </tr>
+
                   <tr>
                     <td><strong>Crédito em saúde</strong></td>
                     <td>Usa inteligência sobre qualidade da conta e risco de glosa para precificar recebíveis hospitalares.</td>
