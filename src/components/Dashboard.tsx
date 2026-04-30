@@ -836,6 +836,31 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
+            
+            <div style={{ padding: '1.5rem 0 0' }}>
+              {(() => {
+                const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
+                const recData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  return proj.hospitaisMedios * proj.ticket * 12;
+                });
+                const arrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  return proj.hospitaisFim * proj.ticket * 12;
+                });
+                const costData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  return proj.custo * 12;
+                });
+                return (
+                  <Plot data={[
+                    { type: 'bar', name: 'Receita Reconhecida', x: xsProj, y: recData, marker: { color: '#A78BFA' } },
+                    { type: 'scatter', mode: 'lines+markers', name: 'ARR de saída', x: xsProj, y: arrData, line: { color: '#7C5CFC', width: 3 } as any },
+                    { type: 'scatter', mode: 'lines', name: 'Custo Operacional', x: xsProj, y: costData, line: { color: '#964219', width: 2, dash: 'dot' } as any },
+                  ] as any} layout={getLayout({ margin: { t: 20, r: 10, b: 40, l: 60 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'R$' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+                );
+              })()}
+            </div>
           </div></div>
         </section>
       )}
@@ -955,6 +980,28 @@ export default function Dashboard() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <div style={{ padding: '1.5rem 0 0' }}>
+              {(() => {
+                const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
+                const subArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  const arr = proj.hospitaisFim * proj.ticket * 12;
+                  return arr * ((proj.subPct ?? 0) / 100);
+                });
+                const perfArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  const arr = proj.hospitaisFim * proj.ticket * 12;
+                  return arr * ((proj.perfPct ?? 0) / 100);
+                });
+                return (
+                  <Plot data={[
+                    { type: 'bar', name: 'Subscription ARR', x: xsProj, y: subArrData, marker: { color: '#7C5CFC' } },
+                    { type: 'bar', name: 'Perf. Fee ARR', x: xsProj, y: perfArrData, marker: { color: '#A78BFA' } },
+                  ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 60 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'ARR (R$)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+                );
+              })()}
             </div>
             
             <div className="section-divider" />
