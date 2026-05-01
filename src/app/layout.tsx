@@ -3,8 +3,8 @@ import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Equa — DRE',
-  description: 'Modelo financeiro dinâmico. Altere premissas, OKRs ou milestones para ver DRE, caixa e cenários em tempo real.',
+  title: 'Equa — Business',
+  description: 'Equa Financial Modeling & Business Plan Dashboard',
 };
 
 export const viewport: Viewport = {
