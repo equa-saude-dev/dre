@@ -530,6 +530,12 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
 .readonly-mode button {
   display: none !important;
 }
+.readonly-mode .mobile-tabs-select {
+  pointer-events: auto !important;
+  display: block !important;
+  background-color: var(--sur2) !important;
+  border: 1px solid var(--pri) !important;
+}
 .readonly-mode .tab-btn {
   display: block !important;
 }
