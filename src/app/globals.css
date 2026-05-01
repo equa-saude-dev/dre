@@ -544,16 +544,20 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
     background-size: 0.65rem auto;
   }
   .tw {
-    max-width: 100%;
-    width: 100%;
+    max-width: 100% !important;
+    width: 100% !important;
     overflow-x: auto !important;
-    display: block;
-    position: relative;
+    display: block !important;
+    -webkit-overflow-scrolling: touch !important;
   }
-  .initiative-box, .kpi-nested-list, .initiatives-list {
-    max-width: 100%;
-    width: 100%;
-    overflow-x: hidden;
+  .app, .tab-panel, .panel, .pb, .initiatives-list, .initiative-box, .kpi-nested-list {
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+  .kpi-table-v2 {
+    min-width: 750px !important;
   }
   .mobile-tabs-select:focus {
     outline: none;
