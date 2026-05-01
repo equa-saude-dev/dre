@@ -708,14 +708,14 @@ export default function Dashboard() {
 
                       <div className="kpi-nested-list">
                         <div className="tw">
-                          <div className="kpi-grid-header" style={{ gridTemplateColumns: '250px 180px 150px 40px' }}>
+                          <div className="kpi-grid-header" style={{ gridTemplateColumns: '300px 220px 180px 40px' }}>
                             <span>AÇÃO / INICIATIVA</span>
                             <span>MÉTRICA</span>
                             <span>META</span>
                             <span></span>
                           </div>
                           {(ini.kpis || []).map(k => (
-                            <div key={k.id} className="kpi-row-v2" style={{ gridTemplateColumns: '250px 180px 150px 40px' }}>
+                            <div key={k.id} className="kpi-row-v2" style={{ gridTemplateColumns: '300px 220px 180px 40px' }}>
                               <textarea rows={2} style={{ resize: 'vertical' }} value={k.initiative || ''} onChange={(e) => updKPI(ph.id, ini.id, k.id, { initiative: e.target.value })} placeholder="Ex: Desenvolver feature X" />
                               <textarea rows={2} style={{ resize: 'vertical' }} value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} placeholder="Ex: Taxa de conversão" />
                               <textarea rows={2} style={{ resize: 'vertical' }} value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} placeholder="Ex: > 10%" />
