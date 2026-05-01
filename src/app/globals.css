@@ -102,7 +102,7 @@ input,button,select,textarea{font:inherit}
 .tab-panel.active{display:grid}
 .g2{grid-template-columns:1.1fr .9fr}
 .g1{grid-template-columns:1fr}
-.panel{background:var(--sur);border:1px solid var(--bor);border-radius:1rem;overflow:hidden}
+.panel{background:var(--sur);border:1px solid var(--bor);border-radius:1rem}
 .ph{padding:1rem 1.25rem;border-bottom:1px solid var(--div);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .ph h2{font-size:1.05rem;font-weight:600;color:var(--tx)}
 .pb{padding:1.25rem}
@@ -542,6 +542,18 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
     background-repeat: no-repeat;
     background-position: right 1rem top 50%;
     background-size: 0.65rem auto;
+  }
+  .tw {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: auto !important;
+    display: block;
+    position: relative;
+  }
+  .initiative-box, .kpi-nested-list, .initiatives-list {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: hidden;
   }
   .mobile-tabs-select:focus {
     outline: none;
