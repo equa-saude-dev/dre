@@ -4,7 +4,17 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Equa — Business',
-  description: 'Equa Financial Modeling & Business Plan Dashboard',
+  description: 'Plataforma de modelagem financeira e planejamento estratégico da Equa.',
+  openGraph: {
+    title: 'Equa — Business',
+    description: 'Plataforma de modelagem financeira e planejamento estratégico da Equa.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Equa — Business',
+    description: 'Plataforma de modelagem financeira e planejamento estratégico da Equa.',
+  },
 };
 
 export const viewport: Viewport = {
