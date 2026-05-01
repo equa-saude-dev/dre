@@ -188,7 +188,35 @@ input,button,select,textarea{font:inherit}
 .section-divider{border:none;border-top:1px solid var(--div);margin:1.25rem 0}
 
 /* ─── TABLES ────────────────────────────────────────────────── */
-.tw{overflow-x:auto}
+.tw{overflow-x:auto !important; -webkit-overflow-scrolling: touch;}
+.kpi-table-v2 {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.kpi-table-v2 th {
+  padding: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--txf);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--div);
+}
+.kpi-table-v2 td {
+  padding: 0.5rem;
+  vertical-align: top;
+}
+.kpi-table-v2 textarea {
+  width: 100%;
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  resize: vertical;
+  min-height: 60px;
+}
 table{width:100%;border-collapse:collapse;font-size:.83rem}
 th,td{padding:.6rem .55rem;border-bottom:1px solid var(--div);text-align:left;vertical-align:middle}
 th{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--txf);font-weight:700;white-space:nowrap}
