@@ -1634,7 +1634,7 @@ export default function Dashboard() {
       )}
       {activeTab === 'dre' && (
         <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>DRE</h2></div><div className="pb">
+          <div className="panel"><div className="ph"><h2>DRE (Capital)</h2></div><div className="pb">
             <div className="tw"><table><thead><tr><th>Item</th>{dreData.map(d => <th key={d.m} className="r">M{d.m}</th>)}<th className="r">Total / Saída</th></tr></thead><tbody>
               <DRERow label="Hospitais ativos" data={dreData} k="h" isSnapshot />
               <DRERow label="Receita contratada" data={dreData} k="recContratada" brl subtotal hint="Mostra contrato assinado, mesmo antes de caixa" />
