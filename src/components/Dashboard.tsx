@@ -88,7 +88,7 @@ const DEFAULT_STATE: DREState = {
     { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
   projecao: {
-    ano1: { novosHospitais: 1, churnAnual: 0, hospitaisPerdidos: 0, hospitaisFim: 1, hospitaisMedios: 1, ticketInicial: 30000, expansaoUpsell: 0, ticket: 30000, cac: 100000, margemBruta: 70, custo: 60000, subPct: 50, perfPct: 50 },
+    ano1: { novosHospitais: 0, churnAnual: 0, hospitaisPerdidos: 0, hospitaisFim: 0, hospitaisMedios: 0, ticketInicial: 30000, expansaoUpsell: 0, ticket: 30000, cac: 100000, margemBruta: 70, custo: 60000, subPct: 50, perfPct: 50 },
     ano2: { novosHospitais: 15, churnAnual: 5, hospitaisPerdidos: 1, hospitaisFim: 15, hospitaisMedios: 10, ticketInicial: 35000, expansaoUpsell: 15, ticket: 40250, cac: 70000, margemBruta: 70, custo: 250000, subPct: 60, perfPct: 40 },
     ano3: { novosHospitais: 33, churnAnual: 7, hospitaisPerdidos: 3, hospitaisFim: 45, hospitaisMedios: 35, ticketInicial: 40000, expansaoUpsell: 20, ticket: 48000, cac: 50000, margemBruta: 70, custo: 500000, subPct: 70, perfPct: 30 },
     ano4: { novosHospitais: 50, churnAnual: 8, hospitaisPerdidos: 5, hospitaisFim: 90, hospitaisMedios: 75, ticketInicial: 50000, expansaoUpsell: 25, ticket: 62500, cac: 50000, margemBruta: 70, custo: 1000000, subPct: 80, perfPct: 20 },
@@ -792,7 +792,30 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={proj[keyP].novosHospitais || 0} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], novosHospitais: Number(e.target.value) } } })} /></td>;
+                      return (
+                        <td key={p} className="r">
+                          <input 
+                            type="number" 
+                            className="scen-input" 
+                            value={proj[keyP].novosHospitais || 0} 
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const newProj = { ...proj, [keyP]: { ...proj[keyP], novosHospitais: val } };
+                              // Recalculate net hospitals for all years to maintain consistency
+                              let currentBase = 0;
+                              ['ano1', 'ano2', 'ano3', 'ano4'].forEach(y => {
+                                const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
+                                const totalH = currentBase + (newProj[ky].novosHospitais || 0);
+                                const lost = Math.round(totalH * ((newProj[ky].churnAnual || 0) / 100));
+                                const net = totalH - lost;
+                                newProj[ky].hospitaisFim = net;
+                                currentBase = net;
+                              });
+                              handleUpdate({ projecao: newProj });
+                            }} 
+                          />
+                        </td>
+                      );
                     })}
                   </tr>
                   <tr>
@@ -800,7 +823,29 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={proj[keyP].churnAnual || 0} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], churnAnual: Number(e.target.value) } } })} /></td>;
+                      return (
+                        <td key={p} className="r">
+                          <input 
+                            type="number" 
+                            className="scen-input" 
+                            value={proj[keyP].churnAnual || 0} 
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const newProj = { ...proj, [keyP]: { ...proj[keyP], churnAnual: val } };
+                              let currentBase = 0;
+                              ['ano1', 'ano2', 'ano3', 'ano4'].forEach(y => {
+                                const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
+                                const totalH = currentBase + (newProj[ky].novosHospitais || 0);
+                                const lost = Math.round(totalH * ((newProj[ky].churnAnual || 0) / 100));
+                                const net = totalH - lost;
+                                newProj[ky].hospitaisFim = net;
+                                currentBase = net;
+                              });
+                              handleUpdate({ projecao: newProj });
+                            }} 
+                          />
+                        </td>
+                      );
                     })}
                   </tr>
                   <tr className="subtotal" style={{ opacity: 0.8 }}>
@@ -816,18 +861,10 @@ export default function Dashboard() {
                   </tr>
                   <tr className="subtotal">
                     <td><strong>Hospitais ativos líquidos no fim do ano</strong></td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      const prevH = i === 0 ? 0 : proj[['ano1', 'ano2', 'ano3'][i-1] as 'ano1' | 'ano2' | 'ano3'].hospitaisFim;
-                      const totalH = prevH + (proj[keyP].novosHospitais || 0);
-                      const lost = Math.round(totalH * ((proj[keyP].churnAnual || 0) / 100));
-                      const net = totalH - lost;
-                      // Sync hospitaisFim for other calculations
-                      if (proj[keyP].hospitaisFim !== net) {
-                         setTimeout(() => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], hospitaisFim: net } } }), 0);
-                      }
-                      return <td key={p} className="r bold">{net}</td>;
+                      return <td key={p} className="r bold">{proj[keyP].hospitaisFim}</td>;
                     })}
                   </tr>
                 </tbody>
@@ -915,7 +952,20 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={proj[keyP].ticketInicial || 0} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], ticketInicial: Number(e.target.value) } } })} /></td>;
+                      return (
+                        <td key={p} className="r">
+                          <input 
+                            type="number" 
+                            className="scen-input" 
+                            value={proj[keyP].ticketInicial || 0} 
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const finalTicket = val * (1 + (proj[keyP].expansaoUpsell || 0) / 100);
+                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], ticketInicial: val, ticket: finalTicket } } });
+                            }} 
+                          />
+                        </td>
+                      );
                     })}
                   </tr>
                   <tr>
@@ -923,7 +973,20 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={proj[keyP].expansaoUpsell || 0} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], expansaoUpsell: Number(e.target.value) } } })} /></td>;
+                      return (
+                        <td key={p} className="r">
+                          <input 
+                            type="number" 
+                            className="scen-input" 
+                            value={proj[keyP].expansaoUpsell || 0} 
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const finalTicket = (proj[keyP].ticketInicial || 0) * (1 + val / 100);
+                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], expansaoUpsell: val, ticket: finalTicket } } });
+                            }} 
+                          />
+                        </td>
+                      );
                     })}
                   </tr>
                   <tr className="subtotal">
@@ -931,11 +994,7 @@ export default function Dashboard() {
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      const finalTicket = (proj[keyP].ticketInicial || 0) * (1 + (proj[keyP].expansaoUpsell || 0) / 100);
-                      if (proj[keyP].ticket !== finalTicket) {
-                        setTimeout(() => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], ticket: finalTicket } } }), 0);
-                      }
-                      return <td key={p} className="r bold">{BRL(finalTicket)}</td>;
+                      return <td key={p} className="r bold">{BRL(proj[keyP].ticket)}</td>;
                     })}
                   </tr>
                   <tr className="subtotal">
