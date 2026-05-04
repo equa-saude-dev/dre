@@ -1652,18 +1652,21 @@ export default function Dashboard() {
       {activeTab === 'dre' && (
         <section className="tab-panel g1 active">
           <div className="panel"><div className="ph"><h2>DRE</h2></div><div className="pb">
-            <div className="tw"><table><thead><tr><th>Item</th>{dreData.map(d => <th key={d.m} className="r">M{d.m}</th>)}<th className="r">Total</th></tr></thead><tbody>
-              <DRERow label="Hospitais ativos" data={dreData} k="h" />
+            <div className="tw"><table><thead><tr><th>Item</th>{dreData.map(d => <th key={d.m} className="r">M{d.m}</th>)}<th className="r">Total / Saída</th></tr></thead><tbody>
+              <DRERow label="Hospitais ativos" data={dreData} k="h" isSnapshot />
               <DRERow label="Receita contratada" data={dreData} k="recContratada" brl subtotal hint="Mostra contrato assinado, mesmo antes de caixa" />
-              <DRERow label="MRR subscription" data={dreData} k="mrrSub" brl indent hint="Mostra recorrência real" />
-              <DRERow label="Performance fee run-rate estimado" data={dreData} k="perfFeeEst" brl indent hint="Mostra variável, separado" />
+              <DRERow label="MRR subscription" data={dreData} k="mrrSub" brl indent hint="Mostra recorrência real" isSnapshot />
+              <DRERow label="Performance fee run-rate estimado" data={dreData} k="perfFeeEst" brl indent hint="Mostra variável, separado" isSnapshot />
               <DRERow label="Receita reconhecida" data={dreData} k="recReconhecida" brl subtotal hint="Mostra DRE" />
               <DRERow label="Caixa recebido" data={dreData} k="caixaRecebido" brl subtotal hint="Mostra runway real" />
-              <DRERow label="Contas a receber" data={dreData} k="contasReceber" brl indent hint="Mostra diferença entre faturado e recebido" />
+              <DRERow label="Contas a receber" data={dreData} k="contasReceber" brl indent hint="Mostra diferença entre faturado e recebido" isSnapshot />
               <DRERow label="Custos Operacionais" data={dreData} k="cost" brl neg subtotal />
               <DRERow label="Burn líquido" data={dreData} k="res" brl bold dtotal />
-              <DRERow label="Caixa acumulado" data={dreData} k="caixa" brl color="var(--pri)" bold />
+              <DRERow label="Caixa acumulado" data={dreData} k="caixa" brl color="var(--pri)" bold isSnapshot />
             </tbody></table></div>
+            <p className="note" style={{ marginTop: '1.5rem', fontSize: '0.85rem' }}>
+              Na coluna Total / Saída, métricas de fluxo são somadas no período, enquanto métricas de posição, como MRR, hospitais ativos, contas a receber e caixa acumulado, mostram o valor de saída no M12. Caixa acumulado representa saldo final, não soma dos saldos mensais.
+            </p>
           </div></div>
         </section>
       )}
@@ -1807,8 +1810,8 @@ function PHintField({ label, field, value, onChange, hint, tooltip, setTooltip, 
   return (<div className="field"><label>{label} <InfoBtn field={field} /></label><input type="number" value={value} min={min} max={max} step={step} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)} /><TooltipBox field={field} /></div>);
 }
 
-function DRERow({ label, data, k, brl, bold, neg, indent, color, subtotal, dtotal, hint }: { label: string; data: MonthData[]; k: keyof MonthData; brl?: boolean; bold?: boolean; neg?: boolean; indent?: boolean; color?: string; subtotal?: boolean; dtotal?: boolean; hint?: string }) {
-  const tot = data.reduce((a, d) => a + (d[k] as number), 0);
+function DRERow({ label, data, k, brl, bold, neg, indent, color, subtotal, dtotal, hint, isSnapshot }: { label: string; data: MonthData[]; k: keyof MonthData; brl?: boolean; bold?: boolean; neg?: boolean; indent?: boolean; color?: string; subtotal?: boolean; dtotal?: boolean; hint?: string; isSnapshot?: boolean }) {
+  const tot = isSnapshot ? (data[data.length - 1][k] as number) : data.reduce((a, d) => a + (d[k] as number), 0);
   const style: React.CSSProperties = { ...(bold ? { fontWeight: 700 } : {}), ...(color ? { color } : {}), ...(indent ? { paddingLeft: '1.2rem' } : {}) };
   return (
     <tr className={dtotal ? 'total' : subtotal ? 'subtotal' : ''}>
@@ -1819,7 +1822,7 @@ function DRERow({ label, data, k, brl, bold, neg, indent, color, subtotal, dtota
         </div>
       </td>
       {data.map((d: MonthData) => <td key={d.m} className="r" style={style}>{brl ? BRL(neg ? -(d[k] as number) : d[k] as number) : d[k] as number}</td>)}
-      <td className="r bold" style={style}>{brl ? BRL(neg ? -tot : tot) : '—'}</td>
+      <td className="r bold" style={style}>{brl ? BRL(neg ? -tot : tot) : tot}</td>
     </tr>
   );
 }
