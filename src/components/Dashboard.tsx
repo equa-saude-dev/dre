@@ -1682,12 +1682,8 @@ export default function Dashboard() {
                   <tr>
                     <th>Premissa</th>
                     {(state.scenarios || []).map(s => (
-                      <th key={s.id} className="r" style={{ minWidth: '160px' }}>
-                        <input 
-                          value={s.name} 
-                          onChange={(e) => updScenario(s.id, { name: e.target.value })} 
-                          style={{ textAlign: 'right', background: 'transparent', border: 'none', color: 'inherit', fontWeight: 'bold', width: '100%', outline: 'none' }} 
-                        />
+                      <th key={s.id} className="r" style={{ minWidth: '160px', color: 'var(--tx)', fontWeight: 'bold' }}>
+                        {s.name}
                       </th>
                     ))}
                   </tr>
@@ -1763,7 +1759,6 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <button className="btn pri" onClick={addScenario} style={{ marginTop: '1.5rem' }}>+ Novo Cenário</button>
             
             <p className="note" style={{ marginTop: '2rem', fontSize: '0.85rem', lineHeight: '1.5' }}>
               Os cenários não variam apenas pela captação, mas principalmente pelo timing de validação comercial, assinatura do contrato, onboarding e recebimento da primeira receita. O cenário conservador mostra o risco de atraso e necessidade de iniciar a próxima rodada antes da primeira receita. O plano principal considera contrato no M9 e primeira receita no M12. O cenário de aceleração considera validação mais rápida, redução do ciclo comercial e antecipação da receita.
