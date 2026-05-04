@@ -1620,11 +1620,11 @@ export default function Dashboard() {
                   <tr>
                     <th>Premissa</th>
                     {(state.scenarios || []).map(s => (
-                      <th key={s.id} className="r">
+                      <th key={s.id} className="r" style={{ minWidth: '160px' }}>
                         <input 
                           value={s.name} 
                           onChange={(e) => updScenario(s.id, { name: e.target.value })} 
-                          style={{ textAlign: 'right', background: 'transparent', border: 'none', color: 'inherit', fontWeight: 'bold', width: '100px' }} 
+                          style={{ textAlign: 'right', background: 'transparent', border: 'none', color: 'inherit', fontWeight: 'bold', width: '100%', outline: 'none' }} 
                         />
                       </th>
                     ))}
