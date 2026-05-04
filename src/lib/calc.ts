@@ -88,6 +88,26 @@ export interface Scenario {
   novaRodada?: number;
 }
 
+export interface PilotStage {
+  id: number;
+  stage: string;
+  deadline: string;
+  deliverable: string;
+}
+
+export interface FunnelMetric {
+  id: number;
+  metric: string;
+  value: string;
+}
+
+export interface ValidationType {
+  id: number;
+  type: string;
+  deadline: string;
+  proves: string;
+}
+
 export interface DREState {
   captacao: number;
   equity: number;
@@ -110,6 +130,9 @@ export interface DREState {
   phases: Phase[];
   scenarios: Scenario[];
   projecao?: Projecao;
+  pilotStages?: PilotStage[];
+  valueFunnel?: FunnelMetric[];
+  validationTypes?: ValidationType[];
 }
 
 export interface MonthData {

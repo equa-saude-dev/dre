@@ -101,7 +101,29 @@ const DEFAULT_STATE: DREState = {
     mult_perf: 3,
     val_type: 'weighted',
     diluicao: 6.12
-  }
+  },
+  pilotStages: [
+    { id: 1, stage: '1. Escopo e dados', deadline: 'M1–M2', deliverable: 'área, convênios e dados definidos' },
+    { id: 2, stage: '2. Ingestão e baseline', deadline: 'M2–M3', deliverable: 'baseline de perda/subfaturamento' },
+    { id: 3, stage: '3. Identificação de oportunidades', deadline: 'M3–M5', deliverable: 'oportunidades classificadas' },
+    { id: 4, stage: '4. Validação hospital', deadline: 'M4–M6', deliverable: 'oportunidades aceitas' },
+    { id: 5, stage: '5. Envio/faturamento', deadline: 'M5–M8', deliverable: 'valores enviados ao convênio' },
+    { id: 6, stage: '6. Recebimento/comprovação', deadline: 'M8–M12', deliverable: 'valor pago e fee calculado' },
+    { id: 7, stage: '7. Case comercial', deadline: 'M10–M12', deliverable: 'business case replicável' },
+  ],
+  valueFunnel: [
+    { id: 1, metric: 'Receita potencial identificada', value: 'R$ 1.2M' },
+    { id: 2, metric: '% validado pelo hospital', value: '85%' },
+    { id: 3, metric: 'Receita enviada ao convênio', value: 'R$ 1.0M' },
+    { id: 4, metric: '% pago pela operadora', value: '92%' },
+    { id: 5, metric: 'Receita efetivamente paga', value: 'R$ 920k' },
+    { id: 6, metric: 'Performance fee Equa', value: 'R$ 92k' },
+  ],
+  validationTypes: [
+    { id: 1, type: 'Validação técnica', deadline: '30 dias', proves: 'dados, integração e fluxo' },
+    { id: 2, type: 'Validação econômica preliminar', deadline: '60–90 dias', proves: 'oportunidades reais e aceite do hospital' },
+    { id: 3, type: 'Validação financeira completa', deadline: '9–12 meses', proves: 'pagamento/recebimento e cobrança do fee' },
+  ]
 };
 
 let _uid = 3000;
@@ -406,13 +428,13 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs hide-on-mobile">
-        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['piloto','Piloto e captura de valor'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
       <div className="mobile-tabs-container hide-on-desktop">
         <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)} className="mobile-tabs-select">
-          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['piloto','Piloto e captura de valor'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
             <option key={k} value={k}>{l}</option>
           ))}
         </select>
@@ -1485,6 +1507,77 @@ export default function Dashboard() {
                     <td><strong>Crédito em saúde</strong></td>
                     <td>Usa inteligência sobre qualidade da conta e risco de glosa para precificar recebíveis hospitalares.</td>
                   </tr>
+                </tbody>
+              </table>
+            </div>
+          </div></div>
+        </section>
+      )}
+      {activeTab === 'piloto' && (
+        <section className="tab-panel active g1">
+          <div className="panel"><div className="ph"><h2>Piloto e Prova de Valor</h2></div><div className="pb">
+            <p className="note" style={{ marginBottom: '1.5rem' }}>O piloto é a base da confiança com o hospital. Ele demonstra não apenas a capacidade técnica de identificar perdas, mas principalmente a capacidade de transformar dados em caixa real.</p>
+            
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Bloco 1 — Etapas do piloto</h3>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>Etapa</th>
+                    <th>Prazo</th>
+                    <th>Entregável</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(state.pilotStages || DEFAULT_STATE.pilotStages!).map(s => (
+                    <tr key={s.id}>
+                      <td><input value={s.stage} onChange={(e) => handleUpdate({ pilotStages: (state.pilotStages || DEFAULT_STATE.pilotStages!).map(x => x.id === s.id ? { ...x, stage: e.target.value } : x) })} /></td>
+                      <td><input value={s.deadline} onChange={(e) => handleUpdate({ pilotStages: (state.pilotStages || DEFAULT_STATE.pilotStages!).map(x => x.id === s.id ? { ...x, deadline: e.target.value } : x) })} /></td>
+                      <td><input value={s.deliverable} onChange={(e) => handleUpdate({ pilotStages: (state.pilotStages || DEFAULT_STATE.pilotStages!).map(x => x.id === s.id ? { ...x, deliverable: e.target.value } : x) })} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Bloco 2 — Funil de valor</h3>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>Métrica</th>
+                    <th className="r">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(m => (
+                    <tr key={m.id}>
+                      <td><input value={m.metric} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === m.id ? { ...x, metric: e.target.value } : x) })} /></td>
+                      <td className="r"><input value={m.value} style={{ textAlign: 'right' }} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === m.id ? { ...x, value: e.target.value } : x) })} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Bloco 3 — Validação curta vs ciclo completo</h3>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>Tipo de validação</th>
+                    <th>Prazo</th>
+                    <th>O que comprova</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(state.validationTypes || DEFAULT_STATE.validationTypes!).map(v => (
+                    <tr key={v.id}>
+                      <td><input value={v.type} onChange={(e) => handleUpdate({ validationTypes: (state.validationTypes || DEFAULT_STATE.validationTypes!).map(x => x.id === v.id ? { ...x, type: e.target.value } : x) })} /></td>
+                      <td><input value={v.deadline} onChange={(e) => handleUpdate({ validationTypes: (state.validationTypes || DEFAULT_STATE.validationTypes!).map(x => x.id === v.id ? { ...x, deadline: e.target.value } : x) })} /></td>
+                      <td><input value={v.proves} onChange={(e) => handleUpdate({ validationTypes: (state.validationTypes || DEFAULT_STATE.validationTypes!).map(x => x.id === v.id ? { ...x, proves: e.target.value } : x) })} /></td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
