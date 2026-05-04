@@ -349,13 +349,13 @@ export default function Dashboard() {
     const proj = state.projecao || DEFAULT_STATE.projecao!;
     const res: Record<string, any> = {};
     let currentBase = 0;
-    ['ano1', 'ano2', 'ano3', 'ano4'].forEach(y => {
+    ['ano1', 'ano2', 'ano3', 'ano4'].forEach((y, i) => {
       const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
       const term = proj[ky] || DEFAULT_STATE.projecao![ky];
-      const totalH = currentBase + (term.novosHospitais || 0);
-      const lost = Math.round(totalH * ((term.churnAnual || 0) / 100));
-      const net = totalH - lost;
-      res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost };
+      const startBase = currentBase;
+      const lost = Math.round(startBase * ((term.churnAnual || 0) / 100));
+      const net = startBase + (term.novosHospitais || 0) - lost;
+      res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost, hospitaisInicio: startBase };
       currentBase = net;
     });
     return res;
@@ -894,14 +894,10 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr className="subtotal" style={{ opacity: 0.8 }}>
-                    <td>Hospitais perdidos (churn)</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
+                    <td>Hospitais perdidos (churn sobre base inicial)</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      const prevH = i === 0 ? 0 : proj[['ano1', 'ano2', 'ano3'][i-1] as 'ano1' | 'ano2' | 'ano3'].hospitaisFim;
-                      const totalH = prevH + (proj[keyP].novosHospitais || 0);
-                      const lost = Math.round(totalH * ((proj[keyP].churnAnual || 0) / 100));
-                      return <td key={p} className="r">{lost}</td>;
+                      return <td key={p} className="r">{projCalculada[keyP].hospitaisPerdidos}</td>;
                     })}
                   </tr>
                   <tr className="subtotal">
@@ -947,71 +943,52 @@ export default function Dashboard() {
                   </tr>
                   <tr className="subtotal">
                     <td>Receita reconhecida média por hospital</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      const recNoAno = proj[keyP].hospitaisMedios * proj[keyP].ticket * 12;
-                      let avg = 0;
-                      if (proj[keyP].hospitaisMedios > 0) {
-                        avg = recNoAno / proj[keyP].hospitaisMedios;
-                      } else if (proj[keyP].hospitaisFim > 0) {
-                        avg = recNoAno / proj[keyP].hospitaisFim;
+                      const proj = projCalculada[keyP];
+                      let recYear = proj.hospitaisMedios * proj.ticket * 12;
+                      if (i === 0) {
+                        recYear = dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
+                        return <td key={p} className="r bold">{BRL(recYear / (proj.hospitaisFim || 1))}</td>;
                       }
-                      return <td key={p} className="r">{avg > 0 ? BRL(avg) : 'N/A'}</td>;
+                      if (proj.hospitaisMedios <= 0) return <td key={p} className="r">N/A</td>;
+                      return <td key={p} className="r bold">{BRL(recYear / proj.hospitaisMedios)}</td>;
                     })}
                   </tr>
-                  <tr className="subtotal" style={{ opacity: 0.9 }}>
-                    <td style={{ fontSize: '0.85rem' }}>Receita anualizada de saída por hospital / run-rate</td>
+                  <tr>
+                    <td>Receita anualizada de saída por hospital / run-rate</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      return <td key={p} className="r">{BRL(proj[keyP].ticket * 12)}</td>;
+                      const proj = projCalculada[p as 'ano1' | 'ano2' | 'ano3' | 'ano4'];
+                      return <td key={p} className="r">{BRL(proj.ticket * 12)}</td>;
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>Payback CAC (meses)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      // Check if Year 1 and start of revenue is late
-                      const scenarioBase = state.scenarios.find(s => s.name.toLowerCase().includes('base')) || state.scenarios[0];
-                      const startM = scenarioBase?.primeiraReceita ?? 12;
-                      
-                      if (i === 0 && startM >= 10) {
-                        return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
-                      }
-
-                      const monthlyMargin = (proj[keyP].ticket * (proj[keyP].margemBruta || 0) / 100);
-                      const payback = monthlyMargin > 0 ? (proj[keyP].cac || 0) / monthlyMargin : 0;
-                      return <td key={p} className="r">{payback > 0 ? `${payback.toFixed(1)} meses` : 'N/A'}</td>;
+                      const proj = projCalculada[p as 'ano1' | 'ano2' | 'ano3' | 'ano4'];
+                      if (i === 0) return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
+                      const mbMensal = proj.ticket * (proj.margemBruta / 100);
+                      if (mbMensal <= 0 || proj.cac <= 0) return <td key={p} className="r">N/A</td>;
+                      return <td key={p} className="r bold">{(proj.cac / mbMensal).toFixed(1)}</td>;
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>LTV / CAC</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      
-                      if (i === 0) {
-                        return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
-                      }
-
-                      const annualMargin = (proj[keyP].ticket * 12 * (proj[keyP].margemBruta || 0) / 100);
-                      const churn = (proj[keyP].churnAnual || 0) / 100;
-                      const cac = proj[keyP].cac || 0;
-                      
-                      if (churn <= 0 || cac <= 0) return <td key={p} className="r">N/A</td>;
-                      
-                      const ltv = annualMargin / churn;
-                      const ratio = ltv / cac;
-                      return <td key={p} className="r bold">{ratio.toFixed(1)}x</td>;
+                      const proj = projCalculada[p as 'ano1' | 'ano2' | 'ano3' | 'ano4'];
+                      if (i === 0) return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
+                      const mbAnual = proj.ticket * 12 * (proj.margemBruta / 100);
+                      const vidaUtil = Math.min(proj.churnAnual > 0 ? 1 / (proj.churnAnual / 100) : 5, 5);
+                      const ltv = mbAnual * vidaUtil;
+                      if (proj.cac <= 0) return <td key={p} className="r">N/A</td>;
+                      return <td key={p} className="r bold">{(ltv / proj.cac).toFixed(1)}x</td>;
                     })}
                   </tr>
                 </tbody>
               </table>
             </div>
             <p className="note" style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.4' }}>
-              “No Ano 1, os unit economics não devem ser lidos como métricas maduras de aquisição, mas como custo de validação do primeiro hospital. Como a primeira receita ocorre apenas no fim do período, payback CAC e LTV/CAC são apresentados como N/A no Ano 1. A partir do Ano 2, essas métricas passam a refletir uma operação comercial mais recorrente, com base ativa, churn e expansão.”
+              No Ano 1, os unit economics não devem ser lidos como métricas maduras de aquisição, mas como custo de validação do primeiro hospital. Como a primeira receita ocorre apenas no fim do período, payback CAC e LTV/CAC são apresentados como N/A no Ano 1. A partir do Ano 2, essas métricas passam a refletir uma operação comercial mais recorrente, com base ativa, churn e expansão. O LTV/CAC é indicativo e utiliza vida útil máxima de 5 anos para evitar distorções por premissas de churn muito baixas.
             </p>
 
             <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Expansão e NRR</h3>
