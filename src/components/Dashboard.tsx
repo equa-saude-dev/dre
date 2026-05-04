@@ -123,6 +123,15 @@ const DEFAULT_STATE: DREState = {
     { id: 1, type: 'Validação técnica', deadline: '30 dias', proves: 'dados, integração e fluxo' },
     { id: 2, type: 'Validação econômica preliminar', deadline: '60–90 dias', proves: 'oportunidades reais e aceite do hospital' },
     { id: 3, type: 'Validação financeira completa', deadline: '9–12 meses', proves: 'pagamento/recebimento e cobrança do fee' },
+  ],
+  nextRoundTriggers: [
+    { id: 1, trigger: 'Contrato assinado', target: '1 hospital' },
+    { id: 2, trigger: 'Receita potencial identificada', target: 'R$ 1.2M' },
+    { id: 3, trigger: 'Receita validada pelo hospital', target: 'R$ 1.0M' },
+    { id: 4, trigger: 'Primeira receita faturada ou recebida', target: 'Confirmada' },
+    { id: 5, trigger: 'Pipeline qualificado', target: 'R$ 10M+ em receita potencial' },
+    { id: 6, trigger: 'Case comercial', target: '1 case com ROI comprovado' },
+    { id: 7, trigger: 'Playbook comercial', target: 'Versão 1.0 pronta para escala' },
   ]
 };
 
@@ -434,7 +443,7 @@ export default function Dashboard() {
       </div>
       <div className="mobile-tabs-container hide-on-desktop">
         <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)} className="mobile-tabs-select">
-          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['piloto','Piloto e captura de valor'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['piloto','Piloto e captura de valor'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita'],['proxima','Próxima rodada']].map(([k,l]) => (
             <option key={k} value={k}>{l}</option>
           ))}
         </select>
@@ -1693,6 +1702,35 @@ export default function Dashboard() {
               </table>
             </div>
             <button className="btn pri" onClick={addScenario} style={{ marginTop: '1.5rem' }}>+ Novo Cenário</button>
+          </div></div>
+        </section>
+      )}
+      {activeTab === 'proxima' && (
+        <section className="tab-panel active g1">
+          <div className="panel"><div className="ph"><h2>Próxima Rodada</h2></div><div className="pb">
+            <div className="alert-box info" style={{ marginBottom: '1.5rem' }}>
+              <strong>Estratégia de Captação:</strong> A próxima rodada deve ser iniciada após contrato assinado e evidências concretas de valor, não apenas após o fim dos 12 meses de runway.
+            </div>
+            
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Gatilhos para próxima rodada</h3>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th>Gatilho</th>
+                    <th>Meta / Evidência</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(state.nextRoundTriggers || DEFAULT_STATE.nextRoundTriggers!).map(t => (
+                    <tr key={t.id}>
+                      <td><input value={t.trigger} onChange={(e) => handleUpdate({ nextRoundTriggers: (state.nextRoundTriggers || DEFAULT_STATE.nextRoundTriggers!).map(x => x.id === t.id ? { ...x, trigger: e.target.value } : x) })} /></td>
+                      <td><input value={t.target} onChange={(e) => handleUpdate({ nextRoundTriggers: (state.nextRoundTriggers || DEFAULT_STATE.nextRoundTriggers!).map(x => x.id === t.id ? { ...x, target: e.target.value } : x) })} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div></div>
         </section>
       )}

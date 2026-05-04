@@ -108,6 +108,12 @@ export interface ValidationType {
   proves: string;
 }
 
+export interface NextRoundTrigger {
+  id: number;
+  trigger: string;
+  target: string;
+}
+
 export interface DREState {
   captacao: number;
   equity: number;
@@ -133,6 +139,7 @@ export interface DREState {
   pilotStages?: PilotStage[];
   valueFunnel?: FunnelMetric[];
   validationTypes?: ValidationType[];
+  nextRoundTriggers?: NextRoundTrigger[];
 }
 
 export interface MonthData {
