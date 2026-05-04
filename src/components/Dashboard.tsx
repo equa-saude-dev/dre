@@ -60,9 +60,9 @@ const DEFAULT_STATE: DREState = {
     outro: [],
   },
   scenarios: [
-    { id: 1, name: 'Conservador', cap: 300000, eq: 8, hFim: 7, sub: 15000, perf: 7000, runwayTarget: null },
-    { id: 2, name: 'Base', cap: 400000, eq: 7, hFim: 10, sub: 20000, perf: 10000, runwayTarget: null },
-    { id: 3, name: 'Otimista', cap: 600000, eq: 8, hFim: 15, sub: 22000, perf: 12000, runwayTarget: null },
+    { id: 1, name: 'Conservador', cap: 300000, eq: 8, hFim: 7, sub: 15000, perf: 7000, runwayTarget: null, contratoAssinado: 11, primeiraReceita: 15, cicloVenda: 180, onboarding: 90, caixaMinimo: 'negativo', novaRodada: 8 },
+    { id: 2, name: 'Base', cap: 400000, eq: 7, hFim: 10, sub: 20000, perf: 10000, runwayTarget: null, contratoAssinado: 9, primeiraReceita: 12, cicloVenda: 120, onboarding: 60, caixaMinimo: 'R$ 74k', novaRodada: 9 },
+    { id: 3, name: 'Upside', cap: 600000, eq: 8, hFim: 15, sub: 22000, perf: 12000, runwayTarget: null, contratoAssinado: 7, primeiraReceita: 10, cicloVenda: 90, onboarding: 30, caixaMinimo: 'R$ X', novaRodada: 7 },
   ],
   phases: [
     { id: 1, name: 'M1 · Validação', startM: 1, endM: 9, objective: 'Primeira prova comercial e operacional completa da Equa', kr: '1 contrato assinado, 3 contas-alvo em pipeline qualificado avançado',
@@ -352,7 +352,7 @@ export default function Dashboard() {
   const addCost = (area: string) => { const nc = { ...state.areaCosts }; nc[area] = [...nc[area], { id: uid(), cat: 'folha', desc: 'Novo item', monthly: 0, startM: 1, endM: meses }]; handleUpdate({ areaCosts: nc }); };
   const delCost = (area: string, cid: number) => { const nc = { ...state.areaCosts }; nc[area] = nc[area].filter(c => c.id !== cid); handleUpdate({ areaCosts: nc }); };
   const updCost = (area: string, cid: number, patch: Partial<CostItem>) => { const nc = { ...state.areaCosts }; nc[area] = nc[area].map(c => c.id === cid ? { ...c, ...patch } : c); handleUpdate({ areaCosts: nc }); };
-  const addScenario = () => handleUpdate({ scenarios: [...state.scenarios, { id: uid(), name: 'Novo Cenário', cap: state.captacao, eq: state.equity, hFim: state.hFim, sub: state.sub, perf: state.perf, runwayTarget: null }] });
+  const addScenario = () => handleUpdate({ scenarios: [...state.scenarios, { id: uid(), name: 'Novo Cenário', cap: state.captacao, eq: state.equity, hFim: state.hFim, sub: state.sub, perf: state.perf, runwayTarget: null, contratoAssinado: 1, primeiraReceita: 1, cicloVenda: 0, onboarding: 0, caixaMinimo: '', novaRodada: 1 }] });
   const delScenario = (sid: number) => handleUpdate({ scenarios: state.scenarios.filter(s => s.id !== sid) });
   const updScenario = (sid: number, patch: Partial<Scenario>) => handleUpdate({ scenarios: state.scenarios.map(s => s.id === sid ? { ...s, ...patch } : s) });
 
@@ -1301,35 +1301,91 @@ export default function Dashboard() {
       )}
       {activeTab === 'cenarios' && (
         <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>Cenários</h2></div><div className="pb">
+          <div className="panel"><div className="ph"><h2>Comparativo de Cenários</h2></div><div className="pb">
             <div className="tw">
               <table className="cost-table">
                 <thead>
                   <tr>
-                    <th>CENÁRIO</th>
-                    <th className="r">CAPTAÇÃO</th>
-                    <th className="r">EQUITY</th>
-                    <th className="r">HOSP.</th>
-                    <th className="r">CAIXA FINAL</th>
-                    <th className="r">RESULTADO</th>
-                    <th></th>
+                    <th>Premissa</th>
+                    {(state.scenarios || []).map(s => (
+                      <th key={s.id} className="r">
+                        <input 
+                          value={s.name} 
+                          onChange={(e) => updScenario(s.id, { name: e.target.value })} 
+                          style={{ textAlign: 'right', background: 'transparent', border: 'none', color: 'inherit', fontWeight: 'bold', width: '100px' }} 
+                        />
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {(state.scenarios || []).map(s => {
-                    const r = calcScenario(s, state, meses);
-                    return (
-                      <tr key={s.id}>
-                        <td><input value={s.name} onChange={(e) => updScenario(s.id, { name: e.target.value })} /></td>
-                        <td className="r"><input type="number" className="scen-input" value={s.cap} onChange={(e) => updScenario(s.id, { cap: Number(e.target.value) })} /></td>
-                        <td className="r"><input type="number" className="scen-input" value={s.eq} onChange={(e) => updScenario(s.id, { eq: Number(e.target.value) })} /></td>
-                        <td className="r"><input type="number" className="scen-input" value={s.hFim} onChange={(e) => updScenario(s.id, { hFim: Number(e.target.value) })} /></td>
-                        <td className="r bold">{BRL(r.caixaFinal)}</td>
-                        <td className="r bold">{BRL(r.resultado)}</td>
-                        <td><button className="btn-icon danger" onClick={() => delScenario(s.id)}>✕</button></td>
-                      </tr>
-                    );
-                  })}
+                  <tr>
+                    <td>Contrato assinado</td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="text" className="scen-input" value={s.contratoAssinado ? `M${s.contratoAssinado}` : ''} onChange={(e) => updScenario(s.id, { contratoAssinado: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>1ª receita recebida</td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="text" className="scen-input" value={s.primeiraReceita ? `M${s.primeiraReceita}` : ''} onChange={(e) => updScenario(s.id, { primeiraReceita: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Ciclo de venda</td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="text" className="scen-input" value={s.cicloVenda ? `${s.cicloVenda} dias` : ''} onChange={(e) => updScenario(s.id, { cicloVenda: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Onboarding</td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="text" className="scen-input" value={s.onboarding ? `${s.onboarding} dias` : ''} onChange={(e) => updScenario(s.id, { onboarding: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Caixa mínimo</td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="text" className="scen-input" value={s.caixaMinimo || ''} onChange={(e) => updScenario(s.id, { caixaMinimo: e.target.value })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td>Nova rodada começa</td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="text" className="scen-input" value={s.novaRodada ? `M${s.novaRodada}` : ''} onChange={(e) => updScenario(s.id, { novaRodada: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td colSpan={(state.scenarios || []).length + 1} style={{ height: '2rem' }}></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Captação</strong></td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="number" className="scen-input" value={s.cap} onChange={(e) => updScenario(s.id, { cap: Number(e.target.value) })} />
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td><strong>Equity (%)</strong></td>
+                    {(state.scenarios || []).map(s => (
+                      <td key={s.id} className="r">
+                        <input type="number" className="scen-input" value={s.eq} onChange={(e) => updScenario(s.id, { eq: Number(e.target.value) })} />
+                      </td>
+                    ))}
+                  </tr>
                 </tbody>
               </table>
             </div>

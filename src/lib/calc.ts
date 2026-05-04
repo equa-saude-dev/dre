@@ -73,6 +73,12 @@ export interface Scenario {
   sub: number;
   perf: number;
   runwayTarget: number | null;
+  contratoAssinado?: number;
+  primeiraReceita?: number;
+  cicloVenda?: number;
+  onboarding?: number;
+  caixaMinimo?: string;
+  novaRodada?: number;
 }
 
 export interface DREState {
