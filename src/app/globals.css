@@ -160,6 +160,66 @@ input,button,select,textarea{font:inherit}
 .pill.pri{background:var(--pri);color:#fff}
 .pill.equapay{background:rgba(20,160,140,.15);color:#14a08c;border:1px solid rgba(20,160,140,.3)}
 
+/* ─── STATUS CARDS ─────────────────────────────────────────── */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.status-card {
+  background: var(--sur);
+  border: 1px solid var(--bor);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.status-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-color: var(--pri);
+}
+.status-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--sur2);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 1px solid var(--div);
+}
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.status-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--txf);
+}
+.status-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--tx);
+  line-height: 1.2;
+}
+.status-card.subscription {
+  background: linear-gradient(135deg, var(--sur) 0%, var(--sur2) 100%);
+  border-left: 4px solid var(--pri);
+}
+.status-card.subscription .status-value {
+  color: var(--pri);
+}
+
 /* ─── ALLOC GRID ────────────────────────────────────────────── */
 .alloc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-top:.5rem}
 .alloc-card{background:var(--sur2);border:1px solid var(--bor);border-radius:.75rem;padding:.875rem 1rem;transition:background .2s}

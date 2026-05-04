@@ -418,7 +418,46 @@ export default function Dashboard() {
         </select>
       </div>
       {activeTab === 'resumo' && (
-        <section className="tab-panel active g2">
+        <section className="tab-panel active g1">
+          <div className="status-grid">
+            <div className="status-card">
+              <div className="status-icon">⏳</div>
+              <div className="status-info">
+                <span className="status-label">Runway</span>
+                <strong className="status-value">12 meses</strong>
+              </div>
+            </div>
+            <div className="status-card">
+              <div className="status-icon">💰</div>
+              <div className="status-info">
+                <span className="status-label">Caixa final</span>
+                <strong className="status-value">R$ 74 mil</strong>
+              </div>
+            </div>
+            <div className="status-card">
+              <div className="status-icon">🎯</div>
+              <div className="status-info">
+                <span className="status-label">Milestone principal</span>
+                <strong className="status-value">contrato assinado + 1ª receita</strong>
+              </div>
+            </div>
+            <div className="status-card">
+              <div className="status-icon">🚀</div>
+              <div className="status-info">
+                <span className="status-label">Gatilho próxima rodada</span>
+                <strong className="status-value">contrato assinado / piloto validado</strong>
+              </div>
+            </div>
+            <div className="status-card subscription">
+              <div className="status-icon">💳</div>
+              <div className="status-info">
+                <span className="status-label">Subscription</span>
+                <strong className="status-value">{BRL(state.sub)} / contrato</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="g2">
           <div className="panel"><div className="ph"><h2>Resumo executivo</h2><span className="pill">{meses} meses</span></div><div className="pb">
             <div className="mg">
               <div className="metric"><span>Captação</span><strong>{BRL(state.captacao)}</strong></div>
@@ -541,6 +580,7 @@ export default function Dashboard() {
             </div>
           </div></div>
 
+          </div>
         </section>
       )}
       {activeTab === 'premissas' && (
