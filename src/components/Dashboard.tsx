@@ -932,7 +932,22 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr className="subtotal">
-                    <td>Receita anual média por hospital</td>
+                    <td>Receita reconhecida média por hospital</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                      const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
+                      const proj = state.projecao!;
+                      const recNoAno = proj[keyP].hospitaisMedios * proj[keyP].ticket * 12;
+                      let avg = 0;
+                      if (proj[keyP].hospitaisMedios > 0) {
+                        avg = recNoAno / proj[keyP].hospitaisMedios;
+                      } else if (proj[keyP].hospitaisFim > 0) {
+                        avg = recNoAno / proj[keyP].hospitaisFim;
+                      }
+                      return <td key={p} className="r">{avg > 0 ? BRL(avg) : 'N/A'}</td>;
+                    })}
+                  </tr>
+                  <tr className="subtotal" style={{ opacity: 0.9 }}>
+                    <td style={{ fontSize: '0.85rem' }}>Receita anualizada de saída por hospital / run-rate</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
@@ -941,29 +956,49 @@ export default function Dashboard() {
                   </tr>
                   <tr className="subtotal">
                     <td>Payback CAC (meses)</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
+                      // Check if Year 1 and start of revenue is late
+                      const scenarioBase = state.scenarios.find(s => s.name.toLowerCase().includes('base')) || state.scenarios[0];
+                      const startM = scenarioBase?.primeiraReceita ?? 12;
+                      
+                      if (i === 0 && startM >= 10) {
+                        return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
+                      }
+
                       const monthlyMargin = (proj[keyP].ticket * (proj[keyP].margemBruta || 0) / 100);
                       const payback = monthlyMargin > 0 ? (proj[keyP].cac || 0) / monthlyMargin : 0;
-                      return <td key={p} className="r">{payback.toFixed(1)} meses</td>;
+                      return <td key={p} className="r">{payback > 0 ? `${payback.toFixed(1)} meses` : 'N/A'}</td>;
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>LTV / CAC</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
+                      
+                      if (i === 0) {
+                        return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
+                      }
+
                       const annualMargin = (proj[keyP].ticket * 12 * (proj[keyP].margemBruta || 0) / 100);
-                      const churn = (proj[keyP].churnAnual || 5) / 100;
-                      const ltv = churn > 0 ? annualMargin / churn : annualMargin * 10; // fallback if churn is 0
-                      const ratio = (proj[keyP].cac || 1) > 0 ? ltv / (proj[keyP].cac || 1) : 0;
+                      const churn = (proj[keyP].churnAnual || 0) / 100;
+                      const cac = proj[keyP].cac || 0;
+                      
+                      if (churn <= 0 || cac <= 0) return <td key={p} className="r">N/A</td>;
+                      
+                      const ltv = annualMargin / churn;
+                      const ratio = ltv / cac;
                       return <td key={p} className="r bold">{ratio.toFixed(1)}x</td>;
                     })}
                   </tr>
                 </tbody>
               </table>
             </div>
+            <p className="note" style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.4' }}>
+              “No Ano 1, os unit economics não devem ser lidos como métricas maduras de aquisição, mas como custo de validação do primeiro hospital. Como a primeira receita ocorre apenas no fim do período, payback CAC e LTV/CAC são apresentados como N/A no Ano 1. A partir do Ano 2, essas métricas passam a refletir uma operação comercial mais recorrente, com base ativa, churn e expansão.”
+            </p>
 
             <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Expansão e NRR</h3>
             <div className="tw">
