@@ -28,7 +28,7 @@ const FIELD_HINTS: Record<string, string> = {
   jurPct:       'Porcentagem fixa de custo jurídico/administrativo aplicada como base. Iniciativas de área jurídico somam por cima.',
   caixaPct:     'Reserva de caixa segregada do modelo financeiro. Não entra no cálculo do resultado operacional.',
   revMult:      'Múltiplo de ARR (Annual Recurring Revenue) usado para calcular o valuation por milestone. Valuation = ARR × Múltiplo.',
-  projHospFim:  'Clientes contratados ao final do período. Usado para cálculo de MRR e ARR de saída.',
+  projHospFim:  'Clientes contratados ao final do período. Usado para cálculo de MRR e Receita anualizada de saída.',
   projHospMedios: 'Média de hospitais efetivamente gerando receita ao longo do ano. Usado para cálculo da receita reconhecida.'
 };
 
@@ -865,7 +865,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr className="subtotal">
-                    <td>ARR de saída</td>
+                    <td>Receita anualizada de saída</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
@@ -893,7 +893,7 @@ export default function Dashboard() {
                 return (
                   <Plot data={[
                     { type: 'bar', name: 'Receita Reconhecida', x: xsProj, y: recData, marker: { color: '#A78BFA' } },
-                    { type: 'scatter', mode: 'lines+markers', name: 'ARR de saída', x: xsProj, y: arrData, line: { color: '#7C5CFC', width: 3 } as any },
+                    { type: 'scatter', mode: 'lines+markers', name: 'Receita anualizada de saída', x: xsProj, y: arrData, line: { color: '#7C5CFC', width: 3 } as any },
                     { type: 'scatter', mode: 'lines', name: 'Custo Operacional', x: xsProj, y: costData, line: { color: '#964219', width: 2, dash: 'dot' } as any },
                   ] as any} layout={getLayout({ margin: { t: 20, r: 10, b: 40, l: 60 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'R$' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
                 );
@@ -980,7 +980,7 @@ export default function Dashboard() {
               </table>
             </div>
 
-            <h3 style={{ fontSize: '1.1rem', marginTop: '1.5rem', marginBottom: '1rem', color: 'var(--pri)' }}>ARR de saída por tipo</h3>
+            <h3 style={{ fontSize: '1.1rem', marginTop: '1.5rem', marginBottom: '1rem', color: 'var(--pri)' }}>Receita anualizada de saída</h3>
             <div className="tw">
               <table className="cost-table">
                 <thead>
@@ -994,7 +994,7 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   <tr className="subtotal">
-                    <td>ARR de saída</td>
+                    <td>Receita anualizada de saída</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
@@ -1009,7 +1009,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr>
-                    <td>Performance fee anualizado</td>
+                    <td>Performance fee run-rate estimado</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const arr = proj.hospitaisFim * proj.ticket * 12;
@@ -1036,17 +1036,20 @@ export default function Dashboard() {
                 return (
                   <Plot data={[
                     { type: 'bar', name: 'Subscription ARR', x: xsProj, y: subArrData, marker: { color: '#7C5CFC' } },
-                    { type: 'bar', name: 'Perf. Fee ARR', x: xsProj, y: perfArrData, marker: { color: '#A78BFA' } },
-                  ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 60 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'ARR (R$)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+                    { type: 'bar', name: 'Performance fee run-rate', x: xsProj, y: perfArrData, marker: { color: '#A78BFA' } },
+                  ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 60 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'Receita Anualizada (R$)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
                 );
               })()}
+              <p className="note" style={{ marginTop: '1rem', fontStyle: 'italic', fontSize: '0.8rem' }}>
+                Para fins de valuation, subscription é tratada como ARR recorrente. Performance fee é apresentado como run-rate variável estimado, com múltiplo menor por depender de timing, baseline e captura efetiva de valor.
+              </p>
             </div>
             
             <div className="section-divider" />
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Valuation ponderado por qualidade da receita</h3>
             <div className="fields sub2" style={{ marginBottom: '1rem' }}>
               <div className="field"><label>Múltiplo sobre Subscription ARR</label><input type="number" value={state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_sub: Number(e.target.value) } })} /></div>
-              <div className="field"><label>Múltiplo sobre Performance fee anualizado</label><input type="number" value={state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_perf: Number(e.target.value) } })} /></div>
+              <div className="field"><label>Múltiplo sobre Performance fee run-rate estimado</label><input type="number" value={state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_perf: Number(e.target.value) } })} /></div>
             </div>
             <div className="tw">
               <table className="cost-table">
@@ -1139,7 +1142,7 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   <tr className="subtotal">
-                    <td>ARR de saída</td>
+                    <td>Receita anualizada de saída</td>
                     {['ano2', 'ano3', 'ano4'].map(p => {
                       const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
@@ -1288,7 +1291,7 @@ export default function Dashboard() {
               <DRERow label="Hospitais ativos" data={dreData} k="h" />
               <DRERow label="Receita contratada" data={dreData} k="recContratada" brl subtotal hint="Mostra contrato assinado, mesmo antes de caixa" />
               <DRERow label="MRR subscription" data={dreData} k="mrrSub" brl indent hint="Mostra recorrência real" />
-              <DRERow label="Performance fee estimado" data={dreData} k="perfFeeEst" brl indent hint="Mostra variável, separado" />
+              <DRERow label="Performance fee run-rate estimado" data={dreData} k="perfFeeEst" brl indent hint="Mostra variável, separado" />
               <DRERow label="Receita reconhecida" data={dreData} k="recReconhecida" brl subtotal hint="Mostra DRE" />
               <DRERow label="Caixa recebido" data={dreData} k="caixaRecebido" brl subtotal hint="Mostra runway real" />
               <DRERow label="Contas a receber" data={dreData} k="contasReceber" brl indent hint="Mostra diferença entre faturado e recebido" />
