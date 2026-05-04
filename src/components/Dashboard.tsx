@@ -890,6 +890,9 @@ export default function Dashboard() {
                   </tr>
                 </tbody>
               </table>
+              <p className="note" style={{ marginTop: '0.5rem', fontSize: '0.75rem', opacity: 0.8 }}>
+                O churn foi aplicado de forma conservadora sobre a base total do ano, e não apenas sobre a base ativa inicial.
+              </p>
             </div>
 
             <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Unit Economics estimado</h3>
@@ -1067,10 +1070,11 @@ export default function Dashboard() {
                 <tbody>
                   <tr>
                     <td>Hospitais médios faturando no ano</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={proj[keyP].hospitaisMedios} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], hospitaisMedios: Number(e.target.value) } } })} /></td>;
+                      const val = i === 0 ? 0.08 : proj[keyP].hospitaisMedios;
+                      return <td key={p} className="r"><input type="number" step="0.01" className="scen-input" value={val} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], hospitaisMedios: Number(e.target.value) } } })} /></td>;
                     })}
                   </tr>
                   <tr>
@@ -1123,15 +1127,17 @@ export default function Dashboard() {
                   </tr>
                   <tr className="subtotal">
                     <td>MRR de saída (Receita mensalizada)</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      if (i === 0) return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — validação</td>;
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket)}</td>
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>Receita anualizada de saída</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      if (i === 0) return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — validação</td>;
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
                   </tr>
@@ -1402,7 +1408,7 @@ export default function Dashboard() {
             })()}
 
             <div className="section-divider" />
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Cenários de valuation por qualidade da receita</h3>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Cenários de valuation por receita anualizada de saída</h3>
             <div className="fields sub3" style={{ marginBottom: '1rem' }}>
               <div className="field"><label>Múltiplo conservador</label><input type="number" value={state.projecao?.mult_cons ?? DEFAULT_STATE.projecao!.mult_cons} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_cons: Number(e.target.value) } })} /></div>
               <div className="field"><label>Múltiplo base</label><input type="number" value={state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, mult_base: Number(e.target.value) } })} /></div>
@@ -1488,7 +1494,7 @@ export default function Dashboard() {
                       <tr className="subtotal">
                         <td>Sem diluição ({(part * 100).toFixed(2).replace('.', ',')}%)</td>
                         {['ano2', 'ano3', 'ano4'].map(p => {
-                          const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                          const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                           const arr = proj.hospitaisFim * proj.ticket * 12;
                           let val = 0;
                           if (valType === 'weighted') {
@@ -1504,7 +1510,7 @@ export default function Dashboard() {
                       <tr className="subtotal">
                         <td>Com diluição estimada ({(diluicao * 100).toFixed(2).replace('.', ',')}%)</td>
                         {['ano2', 'ano3', 'ano4'].map(p => {
-                          const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                          const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                           const arr = proj.hospitaisFim * proj.ticket * 12;
                           let val = 0;
                           if (valType === 'weighted') {
