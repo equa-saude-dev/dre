@@ -110,6 +110,12 @@ export interface MonthData {
   cost: number;
   res: number;
   caixa: number;
+  recContratada: number;
+  mrrSub: number;
+  perfFeeEst: number;
+  recReconhecida: number;
+  caixaRecebido: number;
+  contasReceber: number;
 }
 
 export interface DRETotals {
@@ -153,7 +159,7 @@ export function calculateDRE(state: DREState): { dreData: MonthData[]; totals: D
     const res = rec - cost;
     caixa += res;
     
-    dreData.push({ m, h, rSub, rPerf, rEquaPay, rRevShare, rec, cost, res, caixa });
+    dreData.push({ m, h, rSub, rPerf, rEquaPay, rRevShare, rec, cost, res, caixa, recContratada: rec, mrrSub: rSub, perfFeeEst: rPerf, recReconhecida: rec, caixaRecebido: rec, contasReceber: 0 });
     
     totals.rec += rec;
     totals.rSub += rSub;
