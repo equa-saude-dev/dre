@@ -88,10 +88,10 @@ const DEFAULT_STATE: DREState = {
     { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
   projecao: {
-    ano1: { novosHospitais: 0, churnAnual: 0, hospitaisPerdidos: 0, hospitaisFim: 0, hospitaisMedios: 0, ticketInicial: 30000, expansaoUpsell: 0, ticket: 30000, cac: 100000, margemBruta: 70, custo: 60000, subPct: 50, perfPct: 50 },
+    ano1: { novosHospitais: 1, churnAnual: 0, hospitaisPerdidos: 0, hospitaisFim: 1, hospitaisMedios: 0.1, ticketInicial: 30000, expansaoUpsell: 0, ticket: 30000, cac: 100000, margemBruta: 70, custo: 60000, subPct: 50, perfPct: 50 },
     ano2: { novosHospitais: 15, churnAnual: 5, hospitaisPerdidos: 1, hospitaisFim: 15, hospitaisMedios: 10, ticketInicial: 35000, expansaoUpsell: 15, ticket: 40250, cac: 70000, margemBruta: 70, custo: 250000, subPct: 60, perfPct: 40 },
     ano3: { novosHospitais: 33, churnAnual: 7, hospitaisPerdidos: 3, hospitaisFim: 45, hospitaisMedios: 35, ticketInicial: 40000, expansaoUpsell: 20, ticket: 48000, cac: 50000, margemBruta: 70, custo: 500000, subPct: 70, perfPct: 30 },
-    ano4: { novosHospitais: 50, churnAnual: 8, hospitaisPerdidos: 5, hospitaisFim: 90, hospitaisMedios: 75, ticketInicial: 50000, expansaoUpsell: 25, ticket: 62500, cac: 50000, margemBruta: 70, custo: 1000000, subPct: 80, perfPct: 20 },
+    ano4: { novosHospitais: 42, churnAnual: 10, hospitaisPerdidos: 5, hospitaisFim: 78, hospitaisMedios: 75, ticketInicial: 50000, expansaoUpsell: 25, ticket: 62500, cac: 40000, margemBruta: 70, custo: 1000000, subPct: 80, perfPct: 20 },
     invest_cap: 500000,
     invest_pre: 5500000,
     mult_cons: 4,
@@ -988,7 +988,7 @@ export default function Dashboard() {
               </table>
             </div>
             <p className="note" style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.4' }}>
-              No Ano 1, os unit economics não devem ser lidos como métricas maduras de aquisição, mas como custo de validação do primeiro hospital. Como a primeira receita ocorre apenas no fim do período, payback CAC e LTV/CAC são apresentados como N/A no Ano 1. A partir do Ano 2, essas métricas passam a refletir uma operação comercial mais recorrente, com base ativa, churn e expansão. O LTV/CAC é indicativo e utiliza vida útil máxima de 5 anos para evitar distorções por premissas de churn muito baixas.
+              No Ano 1, os unit economics ainda não devem ser lidos como métricas maduras de aquisição, mas como custo de validação do primeiro hospital. A receita reconhecida média reflete o valor efetivamente reconhecido no período, enquanto o run-rate anualizado representa apenas a receita mensalizada de saída. Payback CAC e LTV/CAC são apresentados como N/A no Ano 1. A partir do Ano 2, as métricas passam a refletir uma operação comercial mais recorrente. Para evitar distorções por churn baixo em uma base ainda sem histórico, o cálculo de LTV/CAC utiliza vida útil máxima de 5 anos.
             </p>
 
             <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Expansão e NRR</h3>
@@ -1069,8 +1069,8 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <p className="note" style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.4' }}>
-              NRR mede a retenção líquida da receita da base existente, excluindo novos hospitais. A métrica considera expansão por upsell, aumento de volume e módulos adicionais, descontando churn e eventuais downgrades.
+            <p className="note" style={{ marginTop: '0.75rem', fontSize: '0.85rem' }}>
+              NRR é uma métrica projetada, não histórica. Ela mede a retenção líquida esperada da receita da base existente, excluindo novos hospitais. A métrica considera expansão por upsell, aumento de volume e módulos adicionais, descontando churn e eventuais downgrades.
             </p>
 
             <div className="section-divider" />
