@@ -355,7 +355,8 @@ export default function Dashboard() {
       const startBase = currentBase;
       const lost = Math.round(startBase * ((term.churnAnual || 0) / 100));
       const net = startBase + (term.novosHospitais || 0) - lost;
-      res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost, hospitaisInicio: startBase };
+      const finalTicket = (term.ticketInicial || 0) * (1 + (term.expansaoUpsell || 0) / 100);
+      res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost, hospitaisInicio: startBase, ticket: finalTicket };
       currentBase = net;
     });
     return res;
@@ -845,18 +846,7 @@ export default function Dashboard() {
                             value={proj[keyP].novosHospitais || 0} 
                             onChange={(e) => {
                               const val = Number(e.target.value);
-                              const newProj = { ...proj, [keyP]: { ...proj[keyP], novosHospitais: val } };
-                              // Recalculate net hospitals for all years to maintain consistency
-                              let currentBase = 0;
-                              ['ano1', 'ano2', 'ano3', 'ano4'].forEach(y => {
-                                const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                                const totalH = currentBase + (newProj[ky].novosHospitais || 0);
-                                const lost = Math.round(totalH * ((newProj[ky].churnAnual || 0) / 100));
-                                const net = totalH - lost;
-                                newProj[ky].hospitaisFim = net;
-                                currentBase = net;
-                              });
-                              handleUpdate({ projecao: newProj });
+                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], novosHospitais: val } } });
                             }} 
                           />
                         </td>
@@ -876,17 +866,7 @@ export default function Dashboard() {
                             value={proj[keyP].churnAnual || 0} 
                             onChange={(e) => {
                               const val = Number(e.target.value);
-                              const newProj = { ...proj, [keyP]: { ...proj[keyP], churnAnual: val } };
-                              let currentBase = 0;
-                              ['ano1', 'ano2', 'ano3', 'ano4'].forEach(y => {
-                                const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                                const totalH = currentBase + (newProj[ky].novosHospitais || 0);
-                                const lost = Math.round(totalH * ((newProj[ky].churnAnual || 0) / 100));
-                                const net = totalH - lost;
-                                newProj[ky].hospitaisFim = net;
-                                currentBase = net;
-                              });
-                              handleUpdate({ projecao: newProj });
+                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], churnAnual: val } } });
                             }} 
                           />
                         </td>
@@ -904,8 +884,7 @@ export default function Dashboard() {
                     <td><strong>Hospitais ativos líquidos no fim do ano</strong></td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      return <td key={p} className="r bold">{proj[keyP].hospitaisFim}</td>;
+                      return <td key={p} className="r bold">{projCalculada[keyP].hospitaisFim}</td>;
                     })}
                   </tr>
                 </tbody>
@@ -1017,8 +996,7 @@ export default function Dashboard() {
                             value={proj[keyP].ticketInicial || 0} 
                             onChange={(e) => {
                               const val = Number(e.target.value);
-                              const finalTicket = val * (1 + (proj[keyP].expansaoUpsell || 0) / 100);
-                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], ticketInicial: val, ticket: finalTicket } } });
+                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], ticketInicial: val } } });
                             }} 
                           />
                         </td>
@@ -1038,8 +1016,7 @@ export default function Dashboard() {
                             value={proj[keyP].expansaoUpsell || 0} 
                             onChange={(e) => {
                               const val = Number(e.target.value);
-                              const finalTicket = (proj[keyP].ticketInicial || 0) * (1 + val / 100);
-                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], expansaoUpsell: val, ticket: finalTicket } } });
+                              handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], expansaoUpsell: val } } });
                             }} 
                           />
                         </td>
