@@ -113,7 +113,6 @@ const DEFAULT_STATE: DREState = {
   ],
   valueFunnel: [
     { id: 1, metric: 'Receita potencial identificada', value: 'R$ 1.2M' },
-    { id: 2, metric: '% validado pelo hospital', value: '85%' },
     { id: 3, metric: 'Receita enviada ao convênio', value: 'R$ 1.0M' },
     { id: 4, metric: '% pago pela operadora', value: '92%' },
     { id: 5, metric: 'Receita efetivamente paga', value: 'R$ 920k' },
@@ -346,6 +345,21 @@ export default function Dashboard() {
   }, [state, isLoaded]);
 
   const { dreData, totals, meses } = useMemo(() => calcDRE(state), [state]);
+  const projCalculada = useMemo(() => {
+    const proj = state.projecao || DEFAULT_STATE.projecao!;
+    const res: Record<string, any> = {};
+    let currentBase = 0;
+    ['ano1', 'ano2', 'ano3', 'ano4'].forEach(y => {
+      const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
+      const term = proj[ky] || DEFAULT_STATE.projecao![ky];
+      const totalH = currentBase + (term.novosHospitais || 0);
+      const lost = Math.round(totalH * ((term.churnAnual || 0) / 100));
+      const net = totalH - lost;
+      res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost };
+      currentBase = net;
+    });
+    return res;
+  }, [state.projecao]);
   const postMoney = state.equity > 0 ? state.captacao / (state.equity / 100) : 0;
   const preMoney = postMoney - state.captacao;
   const lastD = dreData[dreData.length - 1];
@@ -1059,19 +1073,19 @@ export default function Dashboard() {
                     <td>Ticket final (com expansão)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
-                      return <td key={p} className="r bold">{BRL(proj[keyP].ticket)}</td>;
+                      const proj = projCalculada[keyP];
+                      return <td key={p} className="r bold">{BRL(proj.ticket)}</td>;
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>NRR estimado (%)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
-                      const proj = state.projecao!;
+                      const proj = projCalculada[keyP];
                       if (i === 0) {
                         return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
                       }
-                      const nrr = 100 + (proj[keyP].expansaoUpsell || 0) - (proj[keyP].churnAnual || 0);
+                      const nrr = 100 + (proj.expansaoUpsell || 0) - (proj.churnAnual || 0);
                       return <td key={p} className="r bold">{nrr.toFixed(1)}%</td>;
                     })}
                   </tr>
@@ -1120,7 +1134,7 @@ export default function Dashboard() {
                   <tr className="subtotal">
                     <td>Receita reconhecida no ano</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       let rec = proj.hospitaisMedios * proj.ticket * 12;
                       if (i === 0) {
                         rec = dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
@@ -1131,7 +1145,7 @@ export default function Dashboard() {
                   <tr className="subtotal" style={{ color: 'var(--war)' }}>
                     <td>Custo operacional anual (total)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       let cst = proj.custo * 12;
                       if (i === 0) {
                         cst = dreData.slice(0, 12).reduce((sum, d) => sum + (d.cost || 0), 0);
@@ -1142,7 +1156,7 @@ export default function Dashboard() {
                   <tr className="total">
                     <td style={{ color: 'var(--pri)' }}>Margem operacional anual</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       let rec = proj.hospitaisMedios * proj.ticket * 12;
                       let cst = proj.custo * 12;
                       if (i === 0) {
@@ -1155,14 +1169,14 @@ export default function Dashboard() {
                   <tr className="subtotal">
                     <td>MRR de saída (Receita mensalizada)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket)}</td>
                     })}
                   </tr>
                   <tr className="subtotal">
                     <td>Receita anualizada de saída</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
                   </tr>
@@ -1296,14 +1310,14 @@ export default function Dashboard() {
                   <tr className="subtotal">
                     <td>Receita anualizada de saída</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
                   </tr>
                   <tr>
                     <td>Subscription ARR</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       return <td key={p} className="r">{BRL(arr * ((proj.subPct ?? 0) / 100))}</td>
                     })}
@@ -1311,7 +1325,7 @@ export default function Dashboard() {
                   <tr>
                     <td>Performance fee run-rate estimado</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       return <td key={p} className="r">{BRL(arr * ((proj.perfPct ?? 0) / 100))}</td>
                     })}
@@ -1327,12 +1341,12 @@ export default function Dashboard() {
               {(() => {
                 const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
                 const subArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                   const arr = proj.hospitaisFim * proj.ticket * 12;
                   return arr * ((proj.subPct ?? 0) / 100);
                 });
                 const perfArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                   const arr = proj.hospitaisFim * proj.ticket * 12;
                   return arr * ((proj.perfPct ?? 0) / 100);
                 });
@@ -1368,7 +1382,7 @@ export default function Dashboard() {
                   <tr>
                     <td>Subscription ARR × {(state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub)}x</td>
                     {['ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       const subArr = arr * ((proj.subPct ?? 0) / 100);
                       const mult = state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub!;
@@ -1378,7 +1392,7 @@ export default function Dashboard() {
                   <tr>
                     <td>Performance fee × {(state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf)}x</td>
                     {['ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       const perfArr = arr * ((proj.perfPct ?? 0) / 100);
                       const mult = state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf!;
@@ -1388,7 +1402,7 @@ export default function Dashboard() {
                   <tr className="subtotal" style={{ color: 'var(--pri)' }}>
                     <td>Valuation ponderado</td>
                     {['ano2', 'ano3', 'ano4'].map(p => {
-                      const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       const subArr = arr * ((proj.subPct ?? 0) / 100);
                       const perfArr = arr * ((proj.perfPct ?? 0) / 100);
@@ -1624,10 +1638,10 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(m => (
-                    <tr key={m.id}>
-                      <td><input value={m.metric} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === m.id ? { ...x, metric: e.target.value } : x) })} /></td>
-                      <td className="r"><input value={m.value} style={{ textAlign: 'right' }} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === m.id ? { ...x, value: e.target.value } : x) })} /></td>
+                  {(state.valueFunnel || DEFAULT_STATE.valueFunnel!).filter(v => v.metric !== '% validado pelo hospital').map(v => (
+                    <tr key={v.id}>
+                      <td><input value={v.metric} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === v.id ? { ...x, metric: e.target.value } : x) })} /></td>
+                      <td><input className="r" value={v.value} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === v.id ? { ...x, value: e.target.value } : x) })} /></td>
                     </tr>
                   ))}
                 </tbody>
@@ -1685,8 +1699,17 @@ export default function Dashboard() {
                   <tr>
                     <th>Premissa</th>
                     {(state.scenarios || []).map(s => (
-                      <th key={s.id} className="r" style={{ minWidth: '160px', color: 'var(--tx)', fontWeight: 'bold' }}>
-                        {s.name}
+                      <th key={s.id} className="r" style={{ minWidth: '160px', position: 'relative' }}>
+                        <input 
+                          value={s.name} 
+                          onChange={(e) => updScenario(s.id, { name: e.target.value })} 
+                          style={{ textAlign: 'right', background: 'transparent', border: 'none', color: 'inherit', fontWeight: 'bold', width: '100%', outline: 'none' }} 
+                        />
+                        <button 
+                          onClick={() => delScenario(s.id)}
+                          style={{ position: 'absolute', top: '-10px', right: '-10px', background: 'var(--war)', color: '#fff', border: 'none', borderRadius: '50%', width: '20px', height: '20px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="Remover cenário"
+                        >×</button>
                       </th>
                     ))}
                   </tr>
@@ -1762,6 +1785,7 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
+            <button className="btn pri" onClick={addScenario} style={{ marginTop: '1.5rem' }}>+ Novo Cenário</button>
             
             <p className="note" style={{ marginTop: '2rem', fontSize: '0.85rem', lineHeight: '1.5' }}>
               Os cenários não variam apenas pela captação, mas principalmente pelo timing de validação comercial, assinatura do contrato, onboarding e recebimento da primeira receita. O cenário conservador mostra o risco de atraso e necessidade de iniciar a próxima rodada antes da primeira receita. O plano principal considera contrato no M9 e primeira receita no M12. O cenário de aceleração considera validação mais rápida, redução do ciclo comercial e antecipação da receita.
