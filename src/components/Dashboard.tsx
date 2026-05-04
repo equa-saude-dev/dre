@@ -60,9 +60,9 @@ const DEFAULT_STATE: DREState = {
     outro: [],
   },
   scenarios: [
-    { id: 1, name: 'Conservador', cap: 300000, eq: 8, hFim: 7, sub: 15000, perf: 7000, runwayTarget: null, contratoAssinado: 11, primeiraReceita: 15, cicloVenda: 180, onboarding: 90, caixaMinimo: 'negativo', novaRodada: 8 },
-    { id: 2, name: 'Base', cap: 400000, eq: 7, hFim: 10, sub: 20000, perf: 10000, runwayTarget: null, contratoAssinado: 9, primeiraReceita: 12, cicloVenda: 120, onboarding: 60, caixaMinimo: 'R$ 74k', novaRodada: 9 },
-    { id: 3, name: 'Upside', cap: 600000, eq: 8, hFim: 15, sub: 22000, perf: 12000, runwayTarget: null, contratoAssinado: 7, primeiraReceita: 10, cicloVenda: 90, onboarding: 30, caixaMinimo: 'R$ X', novaRodada: 7 },
+    { id: 1, name: 'Conservador — mínimo para rodar', cap: 400000, eq: 6.8, hFim: 7, sub: 15000, perf: 7000, runwayTarget: null, contratoAssinado: 11, primeiraReceita: 15, cicloVenda: 180, onboarding: 90, caixaMinimo: '-R$ 56.000', novaRodada: 8 },
+    { id: 2, name: 'Plano principal', cap: 500000, eq: 8.3, hFim: 10, sub: 20000, perf: 10000, runwayTarget: null, contratoAssinado: 9, primeiraReceita: 12, cicloVenda: 120, onboarding: 60, caixaMinimo: 'R$ 64.000', novaRodada: 9 },
+    { id: 3, name: 'Aceleração opcional', cap: 600000, eq: 9.8, hFim: 15, sub: 22000, perf: 12000, runwayTarget: null, contratoAssinado: 7, primeiraReceita: 10, cicloVenda: 90, onboarding: 30, caixaMinimo: 'R$ 144.000', novaRodada: 7 },
   ],
   phases: [
     { id: 1, name: 'M1 · Validação', startM: 1, endM: 9, objective: 'Primeira prova comercial e operacional completa da Equa', kr: '1 contrato assinado, 3 contas-alvo em pipeline qualificado avançado',
@@ -1764,6 +1764,10 @@ export default function Dashboard() {
               </table>
             </div>
             <button className="btn pri" onClick={addScenario} style={{ marginTop: '1.5rem' }}>+ Novo Cenário</button>
+            
+            <p className="note" style={{ marginTop: '2rem', fontSize: '0.85rem', lineHeight: '1.5' }}>
+              Os cenários não variam apenas pela captação, mas principalmente pelo timing de validação comercial, assinatura do contrato, onboarding e recebimento da primeira receita. O cenário conservador mostra o risco de atraso e necessidade de iniciar a próxima rodada antes da primeira receita. O plano principal considera contrato no M9 e primeira receita no M12. O cenário de aceleração considera validação mais rápida, redução do ciclo comercial e antecipação da receita.
+            </p>
           </div></div>
         </section>
       )}
