@@ -46,6 +46,13 @@ export interface ProjecaoTermo {
   custo: number;
   subPct?: number;
   perfPct?: number;
+  novosHospitais?: number;
+  churnAnual?: number;
+  hospitaisPerdidos?: number;
+  cac?: number;
+  margemBruta?: number;
+  ticketInicial?: number;
+  expansaoUpsell?: number;
 }
 
 export interface Projecao {
