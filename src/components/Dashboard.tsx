@@ -353,8 +353,9 @@ export default function Dashboard() {
       const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
       const term = proj[ky] || DEFAULT_STATE.projecao![ky];
       const startBase = currentBase;
-      const lost = Math.round(startBase * ((term.churnAnual || 0) / 100));
-      const net = startBase + (term.novosHospitais || 0) - lost;
+      const totalBeforeChurn = startBase + (term.novosHospitais || 0);
+      const lost = Math.round(totalBeforeChurn * ((term.churnAnual || 0) / 100));
+      const net = totalBeforeChurn - lost;
       const finalTicket = (term.ticketInicial || 0) * (1 + (term.expansaoUpsell || 0) / 100);
       res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost, hospitaisInicio: startBase, ticket: finalTicket };
       currentBase = net;
@@ -874,7 +875,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr className="subtotal" style={{ opacity: 0.8 }}>
-                    <td>Hospitais perdidos (churn sobre base inicial)</td>
+                    <td>Hospitais perdidos (churn sobre base total)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map((p) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       return <td key={p} className="r">{projCalculada[keyP].hospitaisPerdidos}</td>;
