@@ -1319,6 +1319,9 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
+            <p className="note" style={{ marginTop: '0.75rem', fontSize: '0.8rem', fontStyle: 'italic' }}>
+              No Ano 1, a receita anualizada de saída representa o run-rate do último mês, não a receita reconhecida no período. A receita reconhecida do Ano 1 permanece na DRE/Projeção de Receita e deve refletir apenas o valor efetivamente reconhecido no ano.
+            </p>
 
             <div style={{ padding: '1.5rem 0 0' }}>
               {(() => {
@@ -1340,8 +1343,8 @@ export default function Dashboard() {
                   ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 60 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'Receita Anualizada (R$)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
                 );
               })()}
-              <p className="note" style={{ marginTop: '1rem', fontStyle: 'italic', fontSize: '0.8rem' }}>
-                Para fins de valuation, subscription é tratada como ARR recorrente. Performance fee é apresentado como run-rate variável estimado, com múltiplo menor por depender de timing, baseline e captura efetiva de valor.
+              <p className="note" style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                Receita anualizada de saída representa o run-rate do último mês do ano multiplicado por 12. Subscription é tratada como ARR recorrente. Performance fee é apresentado como run-rate variável estimado, com menor qualidade de receita por depender de timing, baseline, validação do hospital e captura efetiva de valor. Essa métrica não deve ser confundida com receita reconhecida no ano.
               </p>
             </div>
             
