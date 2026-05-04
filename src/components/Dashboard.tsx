@@ -421,38 +421,27 @@ export default function Dashboard() {
         <section className="tab-panel active g1">
           <div className="status-grid">
             <div className="status-card">
-              <div className="status-icon">⏳</div>
               <div className="status-info">
                 <span className="status-label">Runway</span>
                 <strong className="status-value">12 meses</strong>
               </div>
             </div>
             <div className="status-card">
-              <div className="status-icon">💰</div>
               <div className="status-info">
                 <span className="status-label">Caixa final</span>
                 <strong className="status-value">R$ 74 mil</strong>
               </div>
             </div>
             <div className="status-card">
-              <div className="status-icon">🎯</div>
               <div className="status-info">
                 <span className="status-label">Milestone principal</span>
                 <strong className="status-value">contrato assinado + 1ª receita</strong>
               </div>
             </div>
             <div className="status-card">
-              <div className="status-icon">🚀</div>
               <div className="status-info">
                 <span className="status-label">Gatilho próxima rodada</span>
                 <strong className="status-value">contrato assinado / piloto validado</strong>
-              </div>
-            </div>
-            <div className="status-card subscription">
-              <div className="status-icon">💳</div>
-              <div className="status-info">
-                <span className="status-label">Subscription</span>
-                <strong className="status-value">{BRL(state.sub)} / contrato</strong>
               </div>
             </div>
           </div>
@@ -472,6 +461,7 @@ export default function Dashboard() {
               <div className="metric"><span>OPEX total</span><strong>{BRL(totals.opex)}</strong></div>
               <div className="metric ep"><span>Equa Pay (total)</span><strong>{BRL(totals.rEquaPay)}</strong></div>
               <div className="metric"><span>Revenue Share (total)</span><strong>{BRL(totals.rRevShare)}</strong></div>
+              <div className="metric"><span>Subscription (total)</span><strong>{BRL(totals.rSub)}</strong></div>
               <div className="metric"><span>Performance Fee (total)</span><strong>{BRL(totals.rPerf)}</strong></div>
             </div>
             <span className="lbl">Alocação por área</span>
