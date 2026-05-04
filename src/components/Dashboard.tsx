@@ -1035,7 +1035,7 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr>
-                    <td>Expansão por upsell (%)</td>
+                    <td>Expansão líquida por cliente (%)</td>
                     {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
@@ -1065,16 +1065,22 @@ export default function Dashboard() {
                   </tr>
                   <tr className="subtotal">
                     <td>NRR estimado (%)</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      const nrr = (100 + (proj[keyP].expansaoUpsell || 0)) * (1 - (proj[keyP].churnAnual || 0) / 100);
-                      return <td key={p} className="r">{nrr.toFixed(1)}%</td>;
+                      if (i === 0) {
+                        return <td key={p} className="r" style={{ fontSize: '0.75rem', opacity: 0.7 }}>N/A — ano de validação</td>;
+                      }
+                      const nrr = 100 + (proj[keyP].expansaoUpsell || 0) - (proj[keyP].churnAnual || 0);
+                      return <td key={p} className="r bold">{nrr.toFixed(1)}%</td>;
                     })}
                   </tr>
                 </tbody>
               </table>
             </div>
+            <p className="note" style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: '1.4' }}>
+              NRR mede a retenção líquida da receita da base existente, excluindo novos hospitais. A métrica considera expansão por upsell, aumento de volume e módulos adicionais, descontando churn e eventuais downgrades.
+            </p>
 
             <div className="section-divider" />
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Resultados Projetados (Consolidado)</h3>
