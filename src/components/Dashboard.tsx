@@ -1105,34 +1105,50 @@ export default function Dashboard() {
                     })}
                   </tr>
                   <tr>
-                    <td>Custo Operacional Mensal Fixo (R$)</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    <td>Custo operacional anual (R$)</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const keyP = p as 'ano1' | 'ano2' | 'ano3' | 'ano4';
                       const proj = state.projecao!;
-                      return <td key={p} className="r"><input type="number" className="scen-input" value={proj[keyP].custo} onChange={(e) => handleUpdate({ projecao: { ...proj, [keyP]: { ...proj[keyP], custo: Number(e.target.value) } } })} /></td>;
+                      let cst = proj[keyP].custo * 12;
+                      if (i === 0) {
+                        cst = dreData.slice(0, 12).reduce((sum, d) => sum + (d.cost || 0), 0);
+                      }
+                      return <td key={p} className="r">{BRL(cst)}</td>;
                     })}
                   </tr>
                   <tr style={{ height: '1rem' }}><td colSpan={5}></td></tr>
                   <tr className="subtotal">
                     <td>Receita reconhecida no ano</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
-                      return <td key={p} className="r bold">{BRL(proj.hospitaisMedios * proj.ticket * 12)}</td>
+                      let rec = proj.hospitaisMedios * proj.ticket * 12;
+                      if (i === 0) {
+                        rec = dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
+                      }
+                      return <td key={p} className="r bold">{BRL(rec)}</td>
                     })}
                   </tr>
                   <tr className="subtotal" style={{ color: 'var(--war)' }}>
-                    <td>Custo operacional anual</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    <td>Custo operacional anual (total)</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
-                      return <td key={p} className="r bold">-{BRL(proj.custo * 12)}</td>
+                      let cst = proj.custo * 12;
+                      if (i === 0) {
+                        cst = dreData.slice(0, 12).reduce((sum, d) => sum + (d.cost || 0), 0);
+                      }
+                      return <td key={p} className="r bold">-{BRL(cst)}</td>
                     })}
                   </tr>
                   <tr className="total">
                     <td style={{ color: 'var(--pri)' }}>Margem operacional anual</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = state.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
-                      const rec = proj.hospitaisMedios * proj.ticket * 12;
-                      const cst = proj.custo * 12;
+                      let rec = proj.hospitaisMedios * proj.ticket * 12;
+                      let cst = proj.custo * 12;
+                      if (i === 0) {
+                        rec = dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
+                        cst = dreData.slice(0, 12).reduce((sum, d) => sum + (d.cost || 0), 0);
+                      }
                       return <td key={p} className="r bold" style={{ color: 'var(--pri)' }}>{BRL(rec - cst)}</td>
                     })}
                   </tr>
@@ -1153,20 +1169,25 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
+            <p className="note" style={{ marginTop: '1rem', fontSize: '0.8rem' }}>
+              Receita reconhecida representa o valor efetivamente reconhecido dentro do ano. MRR de saída representa a receita mensalizada ao final do período, calculada com base nos hospitais ativos líquidos após churn. Receita anualizada de saída é o run-rate do fim do ano e não deve ser confundida com receita reconhecida no período.
+            </p>
             
             <div style={{ padding: '1.5rem 0 0' }}>
               {(() => {
                 const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
-                const recData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                const recData = ['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                   const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  if (i === 0) return dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
                   return proj.hospitaisMedios * proj.ticket * 12;
                 });
                 const arrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
                   const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
                   return proj.hospitaisFim * proj.ticket * 12;
                 });
-                const costData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                const costData = ['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                   const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
+                  if (i === 0) return dreData.slice(0, 12).reduce((sum, d) => sum + (d.cost || 0), 0);
                   return proj.custo * 12;
                 });
                 return (
