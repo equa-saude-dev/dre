@@ -1286,23 +1286,26 @@ export default function Dashboard() {
                 <tbody>
                   <tr className="subtotal">
                     <td>Receita anualizada de saída</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      if (i === 0) return <td key={p} className="r bold" style={{ fontSize: '0.85rem', opacity: 0.8 }}>N/A — validação</td>;
                       return <td key={p} className="r bold">{BRL(proj.hospitaisFim * proj.ticket * 12)}</td>
                     })}
                   </tr>
                   <tr>
                     <td>Subscription ARR</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      if (i === 0) return <td key={p} className="r">N/A</td>;
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       return <td key={p} className="r">{BRL(arr * ((proj.subPct ?? 0) / 100))}</td>
                     })}
                   </tr>
                   <tr>
                     <td>Performance fee run-rate estimado</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
                       const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
+                      if (i === 0) return <td key={p} className="r">N/A</td>;
                       const arr = proj.hospitaisFim * proj.ticket * 12;
                       return <td key={p} className="r">{BRL(arr * ((proj.perfPct ?? 0) / 100))}</td>
                     })}
@@ -1311,18 +1314,20 @@ export default function Dashboard() {
               </table>
             </div>
             <p className="note" style={{ marginTop: '0.75rem', fontSize: '0.8rem', fontStyle: 'italic' }}>
-              No Ano 1, a receita anualizada de saída representa o run-rate do último mês, não a receita reconhecida no período. A receita reconhecida do Ano 1 permanece na DRE/Projeção de Receita e deve refletir apenas o valor efetivamente reconhecido no ano.
+              No Ano 1, a companhia ainda está em fase de validação/piloto. Por isso, a receita anualizada de saída, Subscription ARR e performance fee run-rate são apresentados como N/A nessa seção. A receita efetivamente reconhecida no Ano 1 permanece refletida na DRE e na Projeção de Receita. A partir do Ano 2, a receita anualizada de saída passa a representar o run-rate do último mês do ano multiplicado por 12, calculado com base nos hospitais ativos líquidos após churn e no ticket final mensal com expansão.
             </p>
 
             <div style={{ padding: '1.5rem 0 0' }}>
               {(() => {
                 const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
-                const subArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                const subArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
+                  if (i === 0) return 0;
                   const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                   const arr = proj.hospitaisFim * proj.ticket * 12;
                   return arr * ((proj.subPct ?? 0) / 100);
                 });
-                const perfArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
+                const perfArrData = ['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
+                  if (i === 0) return 0;
                   const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
                   const arr = proj.hospitaisFim * proj.ticket * 12;
                   return arr * ((proj.perfPct ?? 0) / 100);
