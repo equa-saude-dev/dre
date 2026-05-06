@@ -484,148 +484,98 @@ export default function Dashboard() {
       </div>
       {activeTab === 'resumo' && (
         <section className="tab-panel active g1">
-          <div className="status-grid">
-            <div className="status-card">
-              <div className="status-info">
-                <span className="status-label">Runway</span>
-                <strong className="status-value">12 meses</strong>
+          <div className="panel" style={{ background: 'var(--sur2)', border: '1px solid var(--pri)', padding: '2rem' }}>
+            <p style={{ fontSize: '1.2rem', lineHeight: '1.6', color: 'var(--tx)', margin: 0, fontWeight: 500 }}>
+              “A Equa está em uma rodada anjo/pre-seed para validar comercial, operacional e financeiramente a primeira operação hospitalar real. O capital será usado para transformar prova técnica em contrato, operação recorrente, primeiro valor financeiro comprovado e playbook replicável para escala.”
+            </p>
+          </div>
+
+          <div className="status-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginTop: '1.5rem' }}>
+            <div className="status-card"><div className="status-info"><span className="status-label">Captação</span><strong className="status-value">{BRL(cap)}</strong></div></div>
+            <div className="status-card"><div className="status-info"><span className="status-label">Valuation pre-money</span><strong className="status-value">{BRL(preMoney)}</strong></div></div>
+            <div className="status-card"><div className="status-info"><span className="status-label">Valuation post-money</span><strong className="status-value">{BRL(postMoney)}</strong></div></div>
+            <div className="status-card"><div className="status-info"><span className="status-label">Participação da rodada</span><strong className="status-value">{equityRodada.toFixed(2).replace('.', ',')}%</strong></div></div>
+            <div className="status-card"><div className="status-info"><span className="status-label">Pós-diluição estimada</span><strong className="status-value">{participationDiluida.toFixed(2).replace('.', ',')}%</strong></div></div>
+            <div className="status-card" style={{ borderLeft: '4px solid var(--pri)' }}><div className="status-info"><span className="status-label">ARR de saída (Ano 4)</span><strong className="status-value">{BRL(projCalculada.ano4.arrSaida)}</strong></div></div>
+            <div className="status-card" style={{ borderLeft: '4px solid var(--pri)' }}><div className="status-info"><span className="status-label">Valuation ponderado (Ano 4)</span><strong className="status-value">{BRL(projCalculada.ano4.valPonderado)}</strong></div></div>
+          </div>
+
+          <div className="g2" style={{ marginTop: '1.5rem' }}>
+            <div className="panel">
+              <div className="ph"><h2>Tese da rodada</h2></div>
+              <div className="pb">
+                <ul className="thesis-list" style={{ paddingLeft: '1.2rem', lineHeight: '1.8' }}>
+                  <li>Provar ciclo comercial hospitalar.</li>
+                  <li>Rodar POC histórica ou assistida com dados reais.</li>
+                  <li>Processar lote atual no pré-faturamento.</li>
+                  <li>Comprovar valor pago pelo convênio.</li>
+                  <li>Converter em contrato recorrente.</li>
+                  <li>Preparar playbook para escala no ano 2.</li>
+                </ul>
               </div>
             </div>
-            <div className="status-card">
-              <div className="status-info">
-                <span className="status-label">Caixa final</span>
-                <strong className="status-value">R$ 74 mil</strong>
-              </div>
-            </div>
-            <div className="status-card">
-              <div className="status-info">
-                <span className="status-label">Milestone principal</span>
-                <strong className="status-value">contrato assinado + 1ª receita</strong>
-              </div>
-            </div>
-            <div className="status-card">
-              <div className="status-info">
-                <span className="status-label">Gatilho próxima rodada</span>
-                <strong className="status-value">contrato assinado / piloto validado</strong>
+
+            <div className="panel">
+              <div className="ph"><h2>O que não estamos assumindo</h2></div>
+              <div className="pb">
+                <ul className="thesis-list" style={{ paddingLeft: '1.2rem', lineHeight: '1.8', color: 'var(--txm)' }}>
+                  <li>Não estamos prometendo liquidez.</li>
+                  <li>Não estamos usando múltiplo único para toda receita.</li>
+                  <li>Não estamos tratando performance fee como ARR recorrente.</li>
+                  <li>Não estamos assumindo escala sem validação do primeiro hospital.</li>
+                </ul>
               </div>
             </div>
           </div>
 
-          <div className="g2">
-          <div className="panel"><div className="ph"><h2>Resumo executivo</h2><span className="pill">{meses} meses</span></div><div className="pb">
-            <div className="mg">
-              <div className="metric"><span>Captação rodada atual</span><strong>{BRL(cap)}</strong></div>
-              <div className="metric"><span>Valuation pré-money</span><strong>{BRL(preMoney)}</strong></div>
-              <div className="metric"><span>Valuation pós-money</span><strong>{BRL(postMoney)}</strong></div>
-              <div className="metric"><span>Participação da rodada</span><strong>{equityRodada.toFixed(2).replace('.', ',')}%</strong></div>
-              <div className="metric good"><span>Runway estimado</span><strong>{meses} meses</strong></div>
-              <div className={`metric ${lastD && lastD.caixa > 0 ? 'good' : 'warn'}`}><span>Caixa final</span><strong>{BRL(lastD?.caixa || 0)}</strong></div>
-              <div className="metric"><span>Hospitais ao final</span><strong>{lastD?.h || 0}</strong></div>
-              <div className="metric"><span>Receita total</span><strong>{BRL(totals.rec)}</strong></div>
-              <div className={`metric ${totals.res >= 0 ? 'good' : 'bad'}`}><span>Resultado operacional</span><strong>{BRL(totals.res)}</strong></div>
-              <div className="metric"><span>OPEX total</span><strong>{BRL(totals.opex)}</strong></div>
-              <div className="metric ep"><span>Equa Pay (total)</span><strong>{BRL(totals.rEquaPay)}</strong></div>
-              <div className="metric"><span>Revenue Share (total)</span><strong>{BRL(totals.rRevShare)}</strong></div>
-              <div className="metric"><span>Subscription (total)</span><strong>{BRL(totals.rSub)}</strong></div>
-              <div className="metric"><span>Performance Fee (total)</span><strong>{BRL(totals.rPerf)}</strong></div>
+          <div className="panel" style={{ marginTop: '1.5rem' }}>
+            <div className="ph"><h2>Visão Geral de Resultados Operacionais</h2></div>
+            <div className="pb">
+              <div className="mg">
+                <div className="metric good"><span>Runway estimado</span><strong>{meses} meses</strong></div>
+                <div className={`metric ${lastD && lastD.caixa > 0 ? 'good' : 'warn'}`}><span>Caixa final (M12)</span><strong>{BRL(lastD?.caixa || 0)}</strong></div>
+                <div className="metric"><span>Hospitais (Ano 4)</span><strong>{projCalculada.ano4.hospitaisFim}</strong></div>
+                <div className="metric"><span>Receita Total (4 anos)</span><strong>{BRL(Object.values(projCalculada).reduce((s, y: any) => s + y.receitaReconhecida, 0))}</strong></div>
+                <div className="metric"><span>Margem Operacional (Ano 4)</span><strong>{BRL(projCalculada.ano4.margemOperacional)}</strong></div>
+                <div className="metric ep"><span>Equa Pay (DRE M12)</span><strong>{BRL(lastD?.rEquaPay || 0)}</strong></div>
+              </div>
             </div>
-            <span className="lbl">Alocação por área</span>
-            <div className="alloc-grid">
-              {Object.keys(AREA_COLORS).filter(a => (allocAreas[a] || 0) > 0).map(a => {
-                const pct = allocTotal > 0 ? (allocAreas[a] / allocTotal * 100) : 0;
-                return (<div key={a} className="alloc-card"><div className="a-label">{AREA_LABELS[a]}</div><div className="a-pct" style={{ color: AREA_COLORS[a] }}>{pct.toFixed(0)}%</div><div className="a-val">{BRL(allocAreas[a] || 0)}</div><div className="a-bar" style={{ background: AREA_COLORS[a], width: `${pct}%` }}></div></div>);
-              })}
-            </div>
-            <span className="lbl" style={{ marginTop: '1.1rem' }}>Leitura</span><p className="note">{leituraText}</p>
-          </div></div>
-          <div className="panel"><div className="ph"><h2>Evolução mensal</h2></div><div className="pb-nopad">
-            <div style={{ padding: '1.25rem 1.25rem 0' }}>
-              <Plot data={[
-                { type: 'bar', name: 'Subscription', x: xs, y: dreData.map(d => d.rSub), marker: { color: '#7C5CFC' } },
-                { type: 'bar', name: 'Perf. Fee', x: xs, y: dreData.map(d => d.rPerf), marker: { color: '#A78BFA' } },
-                { type: 'bar', name: 'Equa Pay', x: xs, y: dreData.map(d => d.rEquaPay), marker: { color: '#14a08c' } },
-                { type: 'bar', name: 'Revenue Share', x: xs, y: dreData.map(d => d.rRevShare), marker: { color: '#437a22' } },
-                { type: 'scatter', mode: 'lines', name: 'Custos', x: xs, y: dreData.map(d => d.cost), line: { color: '#964219', width: 2, dash: 'dot' } as any },
-              ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 80 }, legend: { orientation: 'h', y: -0.15 }, height: 280 }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
-            </div>
-            <div style={{ padding: '.5rem 1.25rem 1.25rem' }}>
-              <Plot data={[{ type: 'scatter', mode: 'lines', name: 'Caixa acumulado', x: xs, y: dreData.map(d => d.caixa), fill: 'tozeroy', fillcolor: 'rgba(124,92,252,.1)', line: { color: '#7C5CFC', width: 2.5 } as any }] as any} layout={getLayout({ margin: { t: 10, r: 10, b: 40, l: 80 }, height: 220 }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
-            </div>
-          </div></div>
+          </div>
           
-          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Projeção de receita</h2></div><div className="pb-nopad">
-            <div style={{ padding: '1.25rem 1.25rem 0' }}>
-              {(() => {
-                const xsProj = ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'];
-                const subData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
-                  const rec = proj.hospitaisMedios * proj.ticket * 12;
-                  return rec * ((proj.subPct ?? 0) / 100);
-                });
-                const perfData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
-                  const rec = proj.hospitaisMedios * proj.ticket * 12;
-                  return rec * ((proj.perfPct ?? 0) / 100);
-                });
-                const costData = ['ano1', 'ano2', 'ano3', 'ano4'].map(p => {
-                  const proj = state.projecao?.[p as "ano1" | "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano1" | "ano2" | "ano3" | "ano4"];
-                  return proj.custo * 12;
-                });
-                return (
-                  <Plot data={[
-                    { type: 'bar', name: 'Subscription', x: xsProj, y: subData, marker: { color: '#7C5CFC' } },
-                    { type: 'bar', name: 'Perf. Fee', x: xsProj, y: perfData, marker: { color: '#A78BFA' } },
-                    { type: 'scatter', mode: 'lines', name: 'Custos', x: xsProj, y: costData, line: { color: '#964219', width: 2, dash: 'dot' } as any },
-                  ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 80 }, legend: { orientation: 'h', y: -0.15 }, height: 280 }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
-                );
-              })()}
-            </div>
-          </div></div>
+          <div className="g2" style={{ marginTop: '1.5rem' }}>
+            <div className="panel"><div className="ph"><h2>Evolução Mensal (Caixa e Receita)</h2></div><div className="pb-nopad">
+              <div style={{ padding: '1.25rem 1.25rem 0' }}>
+                <Plot data={[
+                  { type: 'bar', name: 'Subscription', x: xs, y: dreData.map(d => d.rSub), marker: { color: '#7C5CFC' } },
+                  { type: 'bar', name: 'Perf. Fee', x: xs, y: dreData.map(d => d.rPerf), marker: { color: '#A78BFA' } },
+                  { type: 'scatter', mode: 'lines', name: 'Caixa', x: xs, y: dreData.map(d => d.caixa), line: { color: '#7C5CFC', width: 2.5 } as any },
+                ] as any} layout={getLayout({ barmode: 'stack', margin: { t: 20, r: 10, b: 40, l: 80 }, legend: { orientation: 'h', y: -0.15 }, height: 280 }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+              </div>
+            </div></div>
 
-          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Simulação de Retorno Potencial (Ilustrativa)</h2></div><div className="pb-nopad">
-            <div style={{ padding: '1.25rem 1.25rem 0' }}>
-              {(() => {
-                const xsProj = ['Ano 2', 'Ano 3', 'Ano 4'];
-                
-                const cap = state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap!;
-                const pre = state.projecao?.invest_pre ?? DEFAULT_STATE.projecao!.invest_pre!;
-                const post = cap + pre;
-                const part = post > 0 ? (cap / post) : 0;
-                const diluicao = (state.projecao?.diluicao ?? DEFAULT_STATE.projecao!.diluicao!) / 100;
-                
-                const projCalculada: any = {
-                  ano2: state.projecao?.ano2 ?? DEFAULT_STATE.projecao!.ano2!,
-                  ano3: state.projecao?.ano3 ?? DEFAULT_STATE.projecao!.ano3!,
-                  ano4: state.projecao?.ano4 ?? DEFAULT_STATE.projecao!.ano4!
-                };
-                Object.keys(projCalculada).forEach(p => {
+            <div className="panel"><div className="ph"><h2>Cenários de Retorno (Ilustrativos)</h2></div><div className="pb-nopad">
+              <div style={{ padding: '1.25rem 1.25rem 0' }}>
+                {(() => {
+                  const xsProj = ['Ano 2', 'Ano 3', 'Ano 4'];
+                  const moicSemDiluicao = xsProj.map((_, i) => {
+                    const p = `ano${i + 2}`;
                     const proj = projCalculada[p];
-                    const arr = proj.hospitaisFim * proj.ticket * 12;
-                    const val = (arr * ((proj.subPct ?? 0) / 100) * (state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub!)) + (arr * ((proj.perfPct ?? 0) / 100) * (state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf!));
-                    proj.valPonderado = val;
-                });
-
-                const moicSemDiluicao = xsProj.map((_, i) => {
-                  const p = `ano${i + 2}`;
-                  const proj = projCalculada[p];
-                  return cap > 0 ? (proj.valPonderado * part) / cap : 0;
-                });
-                const moicComDiluicao = xsProj.map((_, i) => {
-                  const p = `ano${i + 2}`;
-                  const proj = projCalculada[p];
-                  return cap > 0 ? (proj.valPonderado * diluicao) / cap : 0;
-                });
-
-                return (
-                  <Plot data={[
-                    { type: 'bar', name: 'Sem diluição', x: xsProj, y: moicSemDiluicao, marker: { color: '#7C5CFC' }, text: moicSemDiluicao.map(v => v.toFixed(1) + 'x'), textposition: 'auto' },
-                    { type: 'bar', name: 'Com diluição', x: xsProj, y: moicComDiluicao, marker: { color: '#A78BFA' }, text: moicComDiluicao.map(v => v.toFixed(1) + 'x'), textposition: 'auto' },
-                  ] as any} layout={getLayout({ barmode: 'group', margin: { t: 20, r: 10, b: 40, l: 40 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'MOIC (x)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
-                );
-              })()}
-            </div>
-          </div></div>
-
+                    return cap > 0 ? (proj.valPonderado * (cap / postMoney)) / cap : 0;
+                  });
+                  const moicComDiluicao = xsProj.map((_, i) => {
+                    const p = `ano${i + 2}`;
+                    const proj = projCalculada[p];
+                    return cap > 0 ? (proj.valPonderado * (participationDiluida / 100)) / cap : 0;
+                  });
+                  return (
+                    <Plot data={[
+                      { type: 'bar', name: 'Sem diluição', x: xsProj, y: moicSemDiluicao, marker: { color: '#7C5CFC' }, text: moicSemDiluicao.map(v => v.toFixed(1) + 'x'), textposition: 'auto' },
+                      { type: 'bar', name: 'Com diluição', x: xsProj, y: moicComDiluicao, marker: { color: '#A78BFA' }, text: moicComDiluicao.map(v => v.toFixed(1) + 'x'), textposition: 'auto' },
+                    ] as any} layout={getLayout({ barmode: 'group', margin: { t: 20, r: 10, b: 40, l: 40 }, legend: { orientation: 'h', y: -0.15 }, height: 280, yaxis: { title: 'MOIC (x)' } }) as any} style={{ width: '100%' }} config={chartConfig} useResizeHandler />
+                  );
+                })()}
+              </div>
+            </div></div>
           </div>
         </section>
       )}

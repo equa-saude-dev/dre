@@ -242,6 +242,9 @@ input,button,select,textarea{font:inherit}
 /* ─── LABELS / NOTES ────────────────────────────────────────── */
 .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--txf);margin:1rem 0 .5rem;display:block;font-weight:700}
 .note{font-size:.83rem;color:var(--txm);line-height:1.6}
+.thesis-list{list-style:none}
+.thesis-list li{position:relative;margin-bottom:.5rem;padding-left:1.5rem}
+.thesis-list li::before{content:'→';position:absolute;left:0;color:var(--pri);font-weight:bold}
 .stk{display:grid;gap:1rem}
 .derived-note{font-size:.76rem;color:var(--pri);display:inline-flex;align-items:center;gap:.3rem;background:rgba(124,92,252,.1);padding:.28rem .7rem;border-radius:999px;border:1px solid rgba(124,92,252,.25);font-weight:500}
 .equapay-note{font-size:.76rem;color:#14a08c;display:inline-flex;align-items:center;gap:.3rem;background:rgba(20,160,140,.1);padding:.28rem .7rem;border-radius:999px;border:1px solid rgba(20,160,140,.25);font-weight:500}
