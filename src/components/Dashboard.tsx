@@ -1689,9 +1689,9 @@ export default function Dashboard() {
           </div>
 
           <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
-            <div className="panel">
-              <div className="ph"><h2>1. Conservador</h2><span className="pill war">Baixo Risco / Baixo Crescimento</span></div>
-              <div className="pb">
+            <div className="panel" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="ph"><h2>1. Conservador</h2><span className="pill war">Baixo Risco</span></div>
+              <div className="pb" style={{ flex: 1 }}>
                 <ul className="thesis-list">
                   <li>Menor velocidade comercial.</li>
                   <li>Mais POC histórica do que assistida.</li>
@@ -1703,38 +1703,44 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="panel" style={{ border: '2px solid var(--pri)' }}>
+            <div className="panel" style={{ border: '2px solid var(--pri)', display: 'flex', flexDirection: 'column' }}>
               <div className="ph" style={{ background: 'rgba(124, 92, 252, 0.05)' }}><h2>2. Base (Plano Principal)</h2><span className="pill pri">Referência Principal</span></div>
-              <div className="pb">
+              <div className="pb" style={{ flex: 1 }}>
                 <ul className="thesis-list" style={{ marginBottom: '1.5rem' }}>
                   <li>Premissas institucionais validadas.</li>
                   <li>Equilíbrio entre Subscription e Performance.</li>
                   <li>Ciclo comercial e onboarding estabilizados.</li>
                 </ul>
-                <div className="tw" style={{ background: 'var(--sur2)', padding: '1rem', borderRadius: '0.75rem' }}>
-                  <table style={{ fontSize: '0.75rem' }}>
+                <div className="tw" style={{ background: 'var(--sur2)', padding: '1rem', borderRadius: '0.75rem', border: '1px solid var(--div)' }}>
+                  <table style={{ fontSize: '0.75rem', width: '100%' }}>
                     <thead>
-                      <tr><th>Métrica</th><th className="r">Ano 1</th><th className="r">Ano 2</th><th className="r">Ano 3</th><th className="r">Ano 4</th></tr>
+                      <tr style={{ borderBottom: '1px solid var(--div)' }}>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>Métrica</th>
+                        <th className="r" style={{ padding: '4px' }}>Ano 1</th>
+                        <th className="r" style={{ padding: '4px' }}>Ano 2</th>
+                        <th className="r" style={{ padding: '4px' }}>Ano 3</th>
+                        <th className="r" style={{ padding: '4px' }}>Ano 4</th>
+                      </tr>
                     </thead>
-                    <tbody>
-                      <tr><td>Novos Hosp.</td><td className="r">1</td><td className="r">14</td><td className="r">31</td><td className="r">48</td></tr>
-                      <tr><td>Churn (%)</td><td className="r">0%</td><td className="r">5%</td><td className="r">7%</td><td className="r">10%</td></tr>
-                      <tr><td>Ticket (R$)</td><td className="r">30k</td><td className="r">40k</td><td className="r">48k</td><td className="r">62k</td></tr>
-                      <tr><td>Rec. Recog.</td><td className="r">30k</td><td className="r">3,8M</td><td className="r">13,2M</td><td className="r">37,5M</td></tr>
+                    <tbody className="alt-rows">
+                      <tr><td style={{ padding: '4px' }}>Novos Hosp.</td><td className="r">1</td><td className="r">14</td><td className="r">31</td><td className="r">48</td></tr>
+                      <tr><td style={{ padding: '4px' }}>Churn (%)</td><td className="r">0%</td><td className="r">5%</td><td className="r">7%</td><td className="r">10%</td></tr>
+                      <tr><td style={{ padding: '4px' }}>Ticket (R$)</td><td className="r">30.000</td><td className="r">40.250</td><td className="r">48.000</td><td className="r">62.500</td></tr>
+                      <tr><td style={{ padding: '4px' }}>Rec. Recog.</td><td className="r">30k</td><td className="r">3,86M</td><td className="r">13,24M</td><td className="r">37,5M</td></tr>
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
 
-            <div className="panel">
-              <div className="ph"><h2>3. Upside</h2><span className="pill suc">Aceleração Máxima</span></div>
-              <div className="pb">
+            <div className="panel" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="ph"><h2>3. Upside</h2><span className="pill suc">Alta Aceleração</span></div>
+              <div className="pb" style={{ flex: 1 }}>
                 <ul className="thesis-list">
                   <li>Entrada por rede hospitalar acelera unidades.</li>
                   <li>POC assistida vira padrão.</li>
                   <li>Maior conversão de pilotos em contrato.</li>
-                  <li>Maior expansão por módulos e convênios.</li>
+                  <li>Maior expansão por módulos/convênios/guias.</li>
                   <li>Maior peso de subscription ao longo do tempo.</li>
                 </ul>
               </div>
@@ -1742,12 +1748,12 @@ export default function Dashboard() {
           </div>
 
           <div className="panel" style={{ marginTop: '2rem' }}>
-            <div className="ph"><h2>Notas de Transparência</h2></div>
+            <div className="ph"><h2>Transparência e Governança de Dados</h2></div>
             <div className="pb">
               <ul className="thesis-list" style={{ color: 'var(--txm)' }}>
-                <li><strong>Cenários operacionais não são os mesmos que múltiplos de valuation.</strong> Enquanto o cenário operacional estima quanta receita a Equa gera, o múltiplo estima quanto o mercado paga por essa receita.</li>
-                <li><strong>O cenário base alimenta a aba Projeção de Receita e ROI potencial.</strong> É a nossa bússola de execução para os próximos 48 meses.</li>
-                <li><strong>Múltiplos de valuation são aplicados depois, na aba ROI.</strong> O retorno potencial depende da combinação entre receita (execução), múltiplo (mercado) e diluição (captações futuras).</li>
+                <li><strong>Cenários operacionais não são os mesmos que múltiplos de valuation.</strong> Enquanto o cenário operacional estima quanta receita a Equa gera (execução), o múltiplo estima quanto o mercado paga por essa receita (sentimento/qualidade).</li>
+                <li><strong>O cenário base alimenta a aba Projeção de Receita e ROI potencial.</strong> Todas as métricas de retorno e projeção detalhada no dashboard derivam deste plano principal.</li>
+                <li><strong>Múltiplos de valuation são aplicados depois, na aba ROI.</strong> O retorno potencial bruto depende da combinação entre receita final, múltiplo de mercado e diluição estimada.</li>
               </ul>
             </div>
           </div>
