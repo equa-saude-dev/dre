@@ -455,13 +455,13 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs hide-on-mobile">
-        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita'],['roi','ROI potencial']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
       <div className="mobile-tabs-container hide-on-desktop">
         <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)} className="mobile-tabs-select">
-          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita'],['proxima','Próxima rodada']].map(([k,l]) => (
+          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita'],['roi','ROI potencial'],['proxima','Próxima rodada']].map(([k,l]) => (
             <option key={k} value={k}>{l}</option>
           ))}
         </select>
@@ -1481,6 +1481,47 @@ export default function Dashboard() {
       )}
       {activeTab === 'receita' && (
         <section className="tab-panel active g1">
+
+          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Opcionalidade estratégica futura</h2></div><div className="pb">
+            <p className="note" style={{ marginBottom: '1.5rem' }}>A Equa está sendo construída para se tornar uma infraestrutura crítica de inteligência financeira hospitalar. Caso execute bem, essa camada pode se tornar estratégica para diferentes categorias de players do setor.</p>
+            <div className="tw">
+              <table className="cost-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '25%' }}>CATEGORIA</th>
+                    <th>DESCRIÇÃO DO VALOR ESTRATÉGICO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>ERP / HIS hospitalar</strong></td>
+                    <td>Adiciona uma camada de IA e inteligência de receita ao fluxo operacional já instalado nos hospitais.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Plataformas de RCM / IA</strong></td>
+                    <td>Amplia cobertura em pré-faturamento, contratos e hospitais pequenos/médios.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Operadoras verticalizadas</strong></td>
+                    <td>Melhora margem, governança de receita e padronização financeira em redes próprias.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Grupos hospitalares</strong></td>
+                    <td>Reduz perdas, melhora previsibilidade de recebimento e padroniza cobrança entre unidades.</td>
+                  </tr>
+
+                  <tr>
+                    <td><strong>Crédito em saúde</strong></td>
+                    <td>Usa inteligência sobre qualidade da conta e risco de glosa para precificar recebíveis hospitalares.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div></div>
+        </section>
+      )}
+      {activeTab === 'roi' && (
+        <section className="tab-panel active g1">
           <div className="panel"><div className="ph"><h2>Retorno potencial para investidores</h2></div><div className="pb">
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Rodada atual</h3>
             <div className="fields sub2">
@@ -1624,43 +1665,6 @@ export default function Dashboard() {
             <p className="note" style={{ marginTop: '1rem' }}>
               Os cenários de valuation são ilustrativos. Subscription ARR recebe múltiplo superior por representar receita recorrente mais previsível. Performance fee é tratado como run-rate variável estimado e recebe múltiplo menor por depender de baseline, timing, validação do hospital e captura efetiva de valor. Cenários não representam promessa de liquidez, valuation futuro ou retorno garantido.
             </p>
-          </div></div>
-
-          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Opcionalidade estratégica futura</h2></div><div className="pb">
-            <p className="note" style={{ marginBottom: '1.5rem' }}>A Equa está sendo construída para se tornar uma infraestrutura crítica de inteligência financeira hospitalar. Caso execute bem, essa camada pode se tornar estratégica para diferentes categorias de players do setor.</p>
-            <div className="tw">
-              <table className="cost-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: '25%' }}>CATEGORIA</th>
-                    <th>DESCRIÇÃO DO VALOR ESTRATÉGICO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>ERP / HIS hospitalar</strong></td>
-                    <td>Adiciona uma camada de IA e inteligência de receita ao fluxo operacional já instalado nos hospitais.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Plataformas de RCM / IA</strong></td>
-                    <td>Amplia cobertura em pré-faturamento, contratos e hospitais pequenos/médios.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Operadoras verticalizadas</strong></td>
-                    <td>Melhora margem, governança de receita e padronização financeira em redes próprias.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Grupos hospitalares</strong></td>
-                    <td>Reduz perdas, melhora previsibilidade de recebimento e padroniza cobrança entre unidades.</td>
-                  </tr>
-
-                  <tr>
-                    <td><strong>Crédito em saúde</strong></td>
-                    <td>Usa inteligência sobre qualidade da conta e risco de glosa para precificar recebíveis hospitalares.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
           </div></div>
         </section>
       )}
