@@ -1679,106 +1679,78 @@ export default function Dashboard() {
         </section>
       )}
       {activeTab === 'cenarios' && (
-        <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>Comparativo de Cenários</h2></div><div className="pb">
-            <div className="tw">
-              <table className="cost-table">
-                <thead>
-                  <tr>
-                    <th>Premissa</th>
-                    {(state.scenarios || []).map(s => (
-                      <th key={s.id} className="r" style={{ minWidth: '160px', position: 'relative' }}>
-                        <input 
-                          value={s.name} 
-                          onChange={(e) => updScenario(s.id, { name: e.target.value })} 
-                          style={{ textAlign: 'right', background: 'transparent', border: 'none', color: 'inherit', fontWeight: 'bold', width: '100%', outline: 'none' }} 
-                        />
-                        <button 
-                          onClick={() => delScenario(s.id)}
-                          style={{ position: 'absolute', top: '-10px', right: '-10px', background: 'var(--war)', color: '#fff', border: 'none', borderRadius: '50%', width: '20px', height: '20px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title="Remover cenário"
-                        >×</button>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Contrato assinado</td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="text" className="scen-input" value={s.contratoAssinado ? `M${s.contratoAssinado}` : ''} onChange={(e) => updScenario(s.id, { contratoAssinado: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>1ª receita recebida</td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="text" className="scen-input" value={s.primeiraReceita ? `M${s.primeiraReceita}` : ''} onChange={(e) => updScenario(s.id, { primeiraReceita: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Ciclo de venda</td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="text" className="scen-input" value={s.cicloVenda ? `${s.cicloVenda} dias` : ''} onChange={(e) => updScenario(s.id, { cicloVenda: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Onboarding</td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="text" className="scen-input" value={s.onboarding ? `${s.onboarding} dias` : ''} onChange={(e) => updScenario(s.id, { onboarding: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Caixa mínimo</td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="text" className="scen-input" value={s.caixaMinimo || ''} onChange={(e) => updScenario(s.id, { caixaMinimo: e.target.value })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td>Nova rodada começa</td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="text" className="scen-input" value={s.novaRodada ? `M${s.novaRodada}` : ''} onChange={(e) => updScenario(s.id, { novaRodada: parseInt(e.target.value.replace(/\D/g,'')) || 0 })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td colSpan={(state.scenarios || []).length + 1} style={{ height: '2rem' }}></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Captação</strong></td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="number" className="scen-input" value={s.cap} onChange={(e) => updScenario(s.id, { cap: Number(e.target.value) })} />
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td><strong>Equity (%)</strong></td>
-                    {(state.scenarios || []).map(s => (
-                      <td key={s.id} className="r">
-                        <input type="number" className="scen-input" value={s.eq} onChange={(e) => updScenario(s.id, { eq: Number(e.target.value) })} />
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
+        <section className="tab-panel active g1">
+          <div className="panel" style={{ background: 'var(--sur2)', borderLeft: '4px solid var(--pri)' }}>
+            <div className="pb">
+              <p className="note" style={{ fontSize: '1rem', color: 'var(--tx)', fontWeight: 500 }}>
+                “Cenários operacionais projetam a capacidade de execução, velocidade de venda e qualidade da receita. Múltiplos de valuation (ex: 4x, 6x, 8x) são aplicados separadamente na aba ROI para estimar o valor futuro do negócio.”
+              </p>
             </div>
-            <button className="btn pri" onClick={addScenario} style={{ marginTop: '1.5rem' }}>+ Novo Cenário</button>
-            
-            <p className="note" style={{ marginTop: '2rem', fontSize: '0.85rem', lineHeight: '1.5' }}>
-              Os cenários não variam apenas pela captação, mas principalmente pelo timing de validação comercial, assinatura do contrato, onboarding e recebimento da primeira receita. O cenário conservador mostra o risco de atraso e necessidade de iniciar a próxima rodada antes da primeira receita. O plano principal considera contrato no M9 e primeira receita no M12. O cenário de aceleração considera validação mais rápida, redução do ciclo comercial e antecipação da receita.
-            </p>
-          </div></div>
+          </div>
+
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+            <div className="panel">
+              <div className="ph"><h2>1. Conservador</h2><span className="pill war">Baixo Risco / Baixo Crescimento</span></div>
+              <div className="pb">
+                <ul className="thesis-list">
+                  <li>Menor velocidade comercial.</li>
+                  <li>Mais POC histórica do que assistida.</li>
+                  <li>Ciclo jurídico mais longo.</li>
+                  <li>Menor expansão líquida por cliente.</li>
+                  <li>Maior dependência de setup não integrado.</li>
+                  <li>Performance fee mais incerto.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="panel" style={{ border: '2px solid var(--pri)' }}>
+              <div className="ph" style={{ background: 'rgba(124, 92, 252, 0.05)' }}><h2>2. Base (Plano Principal)</h2><span className="pill pri">Referência Principal</span></div>
+              <div className="pb">
+                <ul className="thesis-list" style={{ marginBottom: '1.5rem' }}>
+                  <li>Premissas institucionais validadas.</li>
+                  <li>Equilíbrio entre Subscription e Performance.</li>
+                  <li>Ciclo comercial e onboarding estabilizados.</li>
+                </ul>
+                <div className="tw" style={{ background: 'var(--sur2)', padding: '1rem', borderRadius: '0.75rem' }}>
+                  <table style={{ fontSize: '0.75rem' }}>
+                    <thead>
+                      <tr><th>Métrica</th><th className="r">Ano 1</th><th className="r">Ano 2</th><th className="r">Ano 3</th><th className="r">Ano 4</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Novos Hosp.</td><td className="r">1</td><td className="r">14</td><td className="r">31</td><td className="r">48</td></tr>
+                      <tr><td>Churn (%)</td><td className="r">0%</td><td className="r">5%</td><td className="r">7%</td><td className="r">10%</td></tr>
+                      <tr><td>Ticket (R$)</td><td className="r">30k</td><td className="r">40k</td><td className="r">48k</td><td className="r">62k</td></tr>
+                      <tr><td>Rec. Recog.</td><td className="r">30k</td><td className="r">3,8M</td><td className="r">13,2M</td><td className="r">37,5M</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="ph"><h2>3. Upside</h2><span className="pill suc">Aceleração Máxima</span></div>
+              <div className="pb">
+                <ul className="thesis-list">
+                  <li>Entrada por rede hospitalar acelera unidades.</li>
+                  <li>POC assistida vira padrão.</li>
+                  <li>Maior conversão de pilotos em contrato.</li>
+                  <li>Maior expansão por módulos e convênios.</li>
+                  <li>Maior peso de subscription ao longo do tempo.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel" style={{ marginTop: '2rem' }}>
+            <div className="ph"><h2>Notas de Transparência</h2></div>
+            <div className="pb">
+              <ul className="thesis-list" style={{ color: 'var(--txm)' }}>
+                <li><strong>Cenários operacionais não são os mesmos que múltiplos de valuation.</strong> Enquanto o cenário operacional estima quanta receita a Equa gera, o múltiplo estima quanto o mercado paga por essa receita.</li>
+                <li><strong>O cenário base alimenta a aba Projeção de Receita e ROI potencial.</strong> É a nossa bússola de execução para os próximos 48 meses.</li>
+                <li><strong>Múltiplos de valuation são aplicados depois, na aba ROI.</strong> O retorno potencial depende da combinação entre receita (execução), múltiplo (mercado) e diluição (captações futuras).</li>
+              </ul>
+            </div>
+          </div>
         </section>
       )}
       {activeTab === 'proxima' && (
