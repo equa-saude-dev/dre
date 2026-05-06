@@ -455,13 +455,13 @@ export default function Dashboard() {
         <button className="btn-theme" onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>{theme === 'light' ? 'Tema escuro' : 'Tema claro'}</button>
       </div>
       <div className="tabs hide-on-mobile">
-        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['piloto','Piloto e captura de valor'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
+        {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita']].map(([k,l]) => (
           <button key={k} className={`tab-btn${activeTab===k?' active':''}`} onClick={() => setActiveTab(k)}>{l}</button>
         ))}
       </div>
       <div className="mobile-tabs-container hide-on-desktop">
         <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)} className="mobile-tabs-select">
-          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['piloto','Piloto e captura de valor'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita'],['proxima','Próxima rodada']].map(([k,l]) => (
+          {[['resumo','Resumo'],['premissas','Alocação do capital'],['roadmap','GTM / OKRs'],['dre','DRE (Capital)'],['cenarios','Cenários'],['modelo','Modelo de negócio'],['receita','Projeção de receita'],['proxima','Próxima rodada']].map(([k,l]) => (
             <option key={k} value={k}>{l}</option>
           ))}
         </select>
@@ -1658,77 +1658,6 @@ export default function Dashboard() {
                     <td><strong>Crédito em saúde</strong></td>
                     <td>Usa inteligência sobre qualidade da conta e risco de glosa para precificar recebíveis hospitalares.</td>
                   </tr>
-                </tbody>
-              </table>
-            </div>
-          </div></div>
-        </section>
-      )}
-      {activeTab === 'piloto' && (
-        <section className="tab-panel active g1">
-          <div className="panel"><div className="ph"><h2>Piloto e Prova de Valor</h2></div><div className="pb">
-            <p className="note" style={{ marginBottom: '1.5rem' }}>O piloto é a base da confiança com o hospital. Ele demonstra não apenas a capacidade técnica de identificar perdas, mas principalmente a capacidade de transformar dados em caixa real.</p>
-            
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Bloco 1 — Etapas do piloto</h3>
-            <div className="tw">
-              <table className="cost-table">
-                <thead>
-                  <tr>
-                    <th>Etapa</th>
-                    <th>Prazo</th>
-                    <th>Entregável</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(state.pilotStages || DEFAULT_STATE.pilotStages!).map(s => (
-                    <tr key={s.id}>
-                      <td><input value={s.stage} onChange={(e) => handleUpdate({ pilotStages: (state.pilotStages || DEFAULT_STATE.pilotStages!).map(x => x.id === s.id ? { ...x, stage: e.target.value } : x) })} /></td>
-                      <td><input value={s.deadline} onChange={(e) => handleUpdate({ pilotStages: (state.pilotStages || DEFAULT_STATE.pilotStages!).map(x => x.id === s.id ? { ...x, deadline: e.target.value } : x) })} /></td>
-                      <td><input value={s.deliverable} onChange={(e) => handleUpdate({ pilotStages: (state.pilotStages || DEFAULT_STATE.pilotStages!).map(x => x.id === s.id ? { ...x, deliverable: e.target.value } : x) })} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Bloco 2 — Funil de valor</h3>
-            <div className="tw">
-              <table className="cost-table">
-                <thead>
-                  <tr>
-                    <th>Métrica</th>
-                    <th className="r">Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(state.valueFunnel || DEFAULT_STATE.valueFunnel!).filter(v => v.metric !== '% validado pelo hospital').map(v => (
-                    <tr key={v.id}>
-                      <td><input value={v.metric} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === v.id ? { ...x, metric: e.target.value } : x) })} /></td>
-                      <td><input className="r" value={v.value} onChange={(e) => handleUpdate({ valueFunnel: (state.valueFunnel || DEFAULT_STATE.valueFunnel!).map(x => x.id === v.id ? { ...x, value: e.target.value } : x) })} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <h3 style={{ fontSize: '1.1rem', marginTop: '2rem', marginBottom: '1rem', color: 'var(--pri)' }}>Bloco 3 — Validação curta vs ciclo completo</h3>
-            <div className="tw">
-              <table className="cost-table">
-                <thead>
-                  <tr>
-                    <th>Tipo de validação</th>
-                    <th>Prazo</th>
-                    <th>O que comprova</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(state.validationTypes || DEFAULT_STATE.validationTypes!).map(v => (
-                    <tr key={v.id}>
-                      <td><input value={v.type} onChange={(e) => handleUpdate({ validationTypes: (state.validationTypes || DEFAULT_STATE.validationTypes!).map(x => x.id === v.id ? { ...x, type: e.target.value } : x) })} /></td>
-                      <td><input value={v.deadline} onChange={(e) => handleUpdate({ validationTypes: (state.validationTypes || DEFAULT_STATE.validationTypes!).map(x => x.id === v.id ? { ...x, deadline: e.target.value } : x) })} /></td>
-                      <td><input value={v.proves} onChange={(e) => handleUpdate({ validationTypes: (state.validationTypes || DEFAULT_STATE.validationTypes!).map(x => x.id === v.id ? { ...x, proves: e.target.value } : x) })} /></td>
-                    </tr>
-                  ))}
                 </tbody>
               </table>
             </div>
