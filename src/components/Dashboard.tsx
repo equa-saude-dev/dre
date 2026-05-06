@@ -230,6 +230,8 @@ export default function Dashboard() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [expandedPhaseId, setExpandedPhaseId] = useState<number | null>(null);
+  const [expandedIniId, setExpandedIniId] = useState<number | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -707,114 +709,203 @@ export default function Dashboard() {
       )}
       {activeTab === 'roadmap' && (
         <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>GTM / OKRs</h2></div><div className="pb">
-            {(state.phases || []).map(ph => (
-              <div key={ph.id} className="okr-card-v2">
-                <div className="okr-header">
-                  <div className="milestone-badge-v2">{ph.name}</div>
-                  <div className="pill-v2">M{ph.startM}–M{ph.endM}</div>
-                  <button className="btn-icon danger" onClick={() => delMilestone(ph.id)}>✕</button>
-                </div>
-                
-                <div className="okr-main-fields">
-                  <div className="field-v2">
-                    <label>NOME DO MILESTONE</label>
-                    <textarea rows={2} style={{ minHeight: '50px', resize: 'vertical' }} value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
-                  </div>
-                  <div className="field-v2">
-                    <label>OBJETIVO</label>
-                    <textarea rows={5} style={{ minHeight: '100px', resize: 'vertical' }} value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
-                  </div>
-                  <div className="field-v2-sm">
-                    <label>MÊS INÍCIO</label>
-                    <input type="number" value={ph.startM} onChange={(e) => updPhase(ph.id, { startM: Number(e.target.value) })} />
-                  </div>
-                  <div className="field-v2-sm">
-                    <label>MÊS FIM</label>
-                    <input type="number" value={ph.endM} onChange={(e) => updPhase(ph.id, { endM: Number(e.target.value) })} />
-                  </div>
-                </div>
-
-                <div className="field-v2" style={{ marginTop: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <label style={{ margin: 0 }}>KEY RESULTS</label>
-                    <button className="btn-sm outline" onClick={() => addKR(ph.id)}>+ Adicionar KR</button>
-                  </div>
-                  {(!ph.krs || ph.krs.length === 0) && (
-                    <textarea value={ph.kr} onChange={(e) => updPhase(ph.id, { kr: e.target.value })} placeholder="Ex: MRR ≥ R$ 200k, Churn < 5%" style={{ marginBottom: '0.5rem' }} />
-                  )}
-                  {ph.krs && ph.krs.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {ph.krs.map(kr => (
-                        <div key={kr.id} style={{ display: 'flex', gap: '0.5rem' }}>
-                          <input style={{ flex: 1 }} value={kr.text} onChange={(e) => updKR(ph.id, kr.id, e.target.value)} placeholder="Descrição do Key Result" />
-                          <button className="btn-icon danger" onClick={() => delKR(ph.id, kr.id)}>✕</button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="initiatives-list">
-                  {(ph.initiatives || []).map(ini => (
-                    <div key={ini.id} className="initiative-box">
-                      <div className="init-header">
-                        <div className="field-v2">
-                          <label>INICIATIVA</label>
-                          <input value={ini.name} onChange={(e) => updInitiative(ph.id, ini.id, { name: e.target.value })} />
-                        </div>
-                        <div className="field-v2">
-                          <label>ÁREA</label>
-                          <select value={ini.area} onChange={(e) => updInitiative(ph.id, ini.id, { area: e.target.value })}>
-                            {Object.keys(AREA_LABELS).map(a => <option key={a} value={a}>{AREA_LABELS[a]}</option>)}
-                          </select>
-                        </div>
-                        <div className="field-v2">
-                          <label>SUBÁREA</label>
-                          <input value={ini.subarea} onChange={(e) => updInitiative(ph.id, ini.id, { subarea: e.target.value })} />
-                        </div>
-                        <div className="field-v2-sm">
-                          <label>% ALOC.</label>
-                          <input type="number" value={ini.pct} onChange={(e) => updInitiative(ph.id, ini.id, { pct: Number(e.target.value) })} />
-                        </div>
-                        <div className="init-actions">
-                  <button className="btn-sm pri" onClick={() => addKPI(ph.id, ini.id)}>+ KPI</button>
-                          <button className="btn-icon danger" onClick={() => delInitiative(ph.id, ini.id)}>✕</button>
-                        </div>
-                      </div>
-
-                      <div className="kpi-nested-list">
-                        <div className="tw">
-                          <table className="kpi-table-v2">
-                            <thead>
-                              <tr>
-                                <th style={{ width: '300px', textAlign: 'left' }}>AÇÃO / INICIATIVA</th>
-                                <th style={{ width: '220px', textAlign: 'left' }}>MÉTRICA</th>
-                                <th style={{ width: '180px', textAlign: 'left' }}>META</th>
-                                <th style={{ width: '50px' }}></th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {(ini.kpis || []).map(k => (
-                                <tr key={k.id}>
-                                  <td><textarea rows={2} value={k.initiative || ''} onChange={(e) => updKPI(ph.id, ini.id, k.id, { initiative: e.target.value })} placeholder="Ex: Desenvolver feature X" /></td>
-                                  <td><textarea rows={2} value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} placeholder="Ex: Taxa de conversão" /></td>
-                                  <td><textarea rows={2} value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} placeholder="Ex: > 10%" /></td>
-                                  <td style={{ textAlign: 'center' }}><button className="btn-icon danger" onClick={() => delKPI(ph.id, ini.id, k.id)}>✕</button></td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <button className="btn outline" onClick={() => addInitiative(ph.id)} style={{ marginTop: '1rem' }}>+ Adicionar Iniciativa</button>
-                </div>
+          <div className="panel">
+            <div className="ph" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h2>GTM / OKRs (Roadmap)</h2>
+                <p style={{ fontSize: '0.8rem', color: 'var(--txf)', marginTop: '4px' }}>Visualize e gerencie os marcos estratégicos da Equa.</p>
               </div>
-            ))}
-            <button className="btn pri" onClick={addMilestone}>+ Adicionar Milestone</button>
-          </div></div>
+              <button className="btn-sm pri" onClick={addMilestone}>+ Novo Milestone</button>
+            </div>
+            <div className="pb" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {(state.phases || []).length === 0 && (
+                <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--txf)', border: '2px dashed var(--bor)', borderRadius: '1rem' }}>
+                  Nenhum milestone cadastrado. Clique em "+ Novo Milestone" para começar.
+                </div>
+              )}
+              {(state.phases || []).map(ph => {
+                const isExpanded = expandedPhaseId === ph.id;
+                return (
+                  <div key={ph.id} className={`okr-card-v2 ${isExpanded ? 'expanded' : ''}`} 
+                    style={{ 
+                      marginBottom: isExpanded ? '1rem' : '0.25rem', 
+                      padding: isExpanded ? '1.25rem' : '0.75rem',
+                      border: isExpanded ? '1px solid var(--pri)' : '1px solid var(--bor)',
+                      background: isExpanded ? 'var(--sur)' : 'var(--sur2)',
+                      transition: 'all 0.2s ease'
+                    }}>
+                    <div 
+                      className="okr-header" 
+                      onClick={() => {
+                        setExpandedPhaseId(isExpanded ? null : ph.id);
+                        setExpandedIniId(null); // Reset ini expansion when changing phase
+                      }} 
+                      style={{ 
+                        cursor: 'pointer', 
+                        marginBottom: isExpanded ? '1.25rem' : '0', 
+                        borderBottom: isExpanded ? '1px solid var(--div)' : 'none',
+                        paddingBottom: isExpanded ? '0.75rem' : '0',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="milestone-badge-v2" style={{ margin: 0, minWidth: '45px', padding: '0.4rem' }}>
+                          {ph.name.includes('·') ? ph.name.split('·')[0].trim() : 'M'}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontWeight: 700, color: isExpanded ? 'var(--pri)' : 'var(--tx)', fontSize: '0.95rem' }}>
+                            {ph.name.includes('·') ? ph.name.split('·')[1].trim() : ph.name}
+                          </span>
+                          <span className="pill-v2" style={{ width: 'fit-content', marginTop: '2px', fontSize: '0.7rem' }}>M{ph.startM} – M{ph.endM}</span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                           <span style={{ fontSize: '0.65rem', color: 'var(--txf)', fontWeight: 700 }}>{ph.initiatives?.length || 0} INICIATIVAS</span>
+                           <span style={{ 
+                             fontSize: '1rem', 
+                             transition: 'transform 0.3s', 
+                             transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                             color: isExpanded ? 'var(--pri)' : 'var(--txf)'
+                           }}>▾</span>
+                        </div>
+                        <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); delMilestone(ph.id); }}>✕</button>
+                      </div>
+                    </div>
+                    
+                    {isExpanded && (
+                      <div className="okr-card-body">
+                        <div className="okr-main-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                          <div className="field-v2">
+                            <label>NOME COMPLETO</label>
+                            <input value={ph.name} onChange={(e) => updPhase(ph.id, { name: e.target.value })} />
+                          </div>
+                          <div className="field-v2">
+                            <label>OBJETIVO ESTRATÉGICO</label>
+                            <textarea rows={2} style={{ minHeight: '60px' }} value={ph.objective} onChange={(e) => updPhase(ph.id, { objective: e.target.value })} />
+                          </div>
+                          <div style={{ display: 'flex', gap: '1rem' }}>
+                            <div className="field-v2-sm">
+                              <label>INÍCIO</label>
+                              <input type="number" value={ph.startM} onChange={(e) => updPhase(ph.id, { startM: Number(e.target.value) })} />
+                            </div>
+                            <div className="field-v2-sm">
+                              <label>FIM</label>
+                              <input type="number" value={ph.endM} onChange={(e) => updPhase(ph.id, { endM: Number(e.target.value) })} />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="initiatives-list" style={{ marginTop: '1rem', borderTop: '2px dashed var(--div)', paddingTop: '1.5rem' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--txf)', letterSpacing: '0.05em' }}>INICIATIVAS DETALHADAS</h3>
+                            <button className="btn-sm outline" onClick={() => addInitiative(ph.id)}>+ Nova Iniciativa</button>
+                          </div>
+                          
+                          {(ph.initiatives || []).map(ini => {
+                            const isIniExpanded = expandedIniId === ini.id;
+                            return (
+                              <div key={ini.id} className={`initiative-box ${isIniExpanded ? 'expanded' : ''}`} 
+                                style={{ 
+                                  background: isIniExpanded ? 'var(--sur)' : 'var(--sur2)',
+                                  border: isIniExpanded ? '1px solid var(--pri2)' : '1px solid var(--bor)',
+                                  marginBottom: '0.75rem',
+                                  padding: '0'
+                                }}>
+                                <div 
+                                  className="init-header-accordion"
+                                  onClick={() => setExpandedIniId(isIniExpanded ? null : ini.id)}
+                                  style={{ 
+                                    padding: '1rem', 
+                                    cursor: 'pointer', 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center',
+                                    borderBottom: isIniExpanded ? '1px solid var(--div)' : 'none'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <span className="pill" style={{ background: AREA_COLORS[ini.area] + '20', color: AREA_COLORS[ini.area], fontSize: '0.65rem' }}>
+                                      {AREA_LABELS[ini.area]?.toUpperCase()}
+                                    </span>
+                                    <strong style={{ fontSize: '0.9rem', color: 'var(--tx)' }}>{ini.name}</strong>
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--txf)' }}>{ini.kpis?.length || 0} KPIs</span>
+                                    <span style={{ 
+                                      fontSize: '0.8rem', 
+                                      transition: 'transform 0.2s', 
+                                      transform: isIniExpanded ? 'rotate(180deg)' : 'rotate(0deg)' 
+                                    }}>▾</span>
+                                    <button className="btn-icon danger" onClick={(e) => { e.stopPropagation(); delInitiative(ph.id, ini.id); }}>✕</button>
+                                  </div>
+                                </div>
+
+                                {isIniExpanded && (
+                                  <div className="init-body" style={{ padding: '1.25rem' }}>
+                                    <div className="init-fields-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                                      <div className="field-v2">
+                                        <label>NOME DA INICIATIVA</label>
+                                        <input value={ini.name} onChange={(e) => updInitiative(ph.id, ini.id, { name: e.target.value })} />
+                                      </div>
+                                      <div className="field-v2">
+                                        <label>ÁREA RESPONSÁVEL</label>
+                                        <select value={ini.area} onChange={(e) => updInitiative(ph.id, ini.id, { area: e.target.value })}>
+                                          {Object.keys(AREA_LABELS).map(a => <option key={a} value={a}>{AREA_LABELS[a]}</option>)}
+                                        </select>
+                                      </div>
+                                      <div className="field-v2">
+                                        <label>SUBÁREA / FOCO</label>
+                                        <input value={ini.subarea} onChange={(e) => updInitiative(ph.id, ini.id, { subarea: e.target.value })} />
+                                      </div>
+                                    </div>
+
+                                    <div className="kpi-section">
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                        <label style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--txf)' }}>MÉTRICAS DE SUCESSO (KPIs)</label>
+                                        <button className="btn-sm pri" onClick={() => addKPI(ph.id, ini.id)}>+ Adicionar KPI</button>
+                                      </div>
+                                      <div className="tw" style={{ border: '1px solid var(--div)', borderRadius: '0.75rem', overflow: 'hidden' }}>
+                                        <table className="kpi-table-v2" style={{ background: 'var(--sur)' }}>
+                                          <thead style={{ background: 'var(--sur2)' }}>
+                                            <tr>
+                                              <th style={{ width: '40%', textAlign: 'left' }}>AÇÃO / ATIVIDADE</th>
+                                              <th style={{ width: '30%', textAlign: 'left' }}>MÉTRICA</th>
+                                              <th style={{ width: '20%', textAlign: 'left' }}>META</th>
+                                              <th style={{ width: '10%' }}></th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {(ini.kpis || []).map(k => (
+                                              <tr key={k.id}>
+                                                <td><textarea rows={1} value={k.initiative || ''} onChange={(e) => updKPI(ph.id, ini.id, k.id, { initiative: e.target.value })} placeholder="Ex: Desenvolver feature X" style={{ minHeight: '38px' }} /></td>
+                                                <td><textarea rows={1} value={k.metric} onChange={(e) => updKPI(ph.id, ini.id, k.id, { metric: e.target.value })} placeholder="Ex: Taxa de conversão" style={{ minHeight: '38px' }} /></td>
+                                                <td><textarea rows={1} value={k.target} onChange={(e) => updKPI(ph.id, ini.id, k.id, { target: e.target.value })} placeholder="Ex: > 10%" style={{ minHeight: '38px' }} /></td>
+                                                <td style={{ textAlign: 'center' }}><button className="btn-icon danger" onClick={() => delKPI(ph.id, ini.id, k.id)}>✕</button></td>
+                                              </tr>
+                                            ))}
+                                            {(ini.kpis || []).length === 0 && (
+                                              <tr>
+                                                <td colSpan={4} style={{ textAlign: 'center', padding: '1rem', color: 'var(--txf)', fontSize: '0.8rem' }}>Nenhum KPI definido.</td>
+                                              </tr>
+                                            )}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </section>
       )}
       {activeTab === 'receita' && (

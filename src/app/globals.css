@@ -371,6 +371,15 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
   border-radius: 1.25rem;
   margin-bottom: 2rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.okr-card-v2:hover {
+  border-color: var(--pri);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.okr-card-v2.expanded {
+  border-color: var(--pri);
+  background: var(--sur);
 }
 .okr-header {
   display: flex;
@@ -380,6 +389,10 @@ tr.total td{font-weight:700;border-top:2px solid var(--div)}
   margin-bottom: 1.5rem;
   border-bottom: 1px solid var(--div);
   padding-bottom: 1rem;
+  transition: all 0.2s;
+}
+.okr-card-v2:not(.expanded) .okr-header:hover {
+  opacity: 0.8;
 }
 .milestone-badge-v2 {
   background: var(--pri);
