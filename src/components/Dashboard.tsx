@@ -580,88 +580,139 @@ export default function Dashboard() {
         </section>
       )}
       {activeTab === 'premissas' && (
-        <section className="tab-panel g1 active">
-          <div className="panel"><div className="ph"><h2>Alocação do capital</h2>{premDirty && <span style={{ fontSize: '.78rem', color: 'var(--war)', fontWeight: 600 }}>⚠ Alterações pendentes — clique em Aplicar</span>}</div><div className="pb">
-            <div className="fields sub4">
-              <PHintField label="Captação (R$)" field="captacao" value={getPrem('captacao') as number} onChange={(v: string) => setPremField('captacao', Number(v))} hint={FIELD_HINTS.captacao} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
-              <PHintField label="Equity %" field="equity" step={0.1} value={getPrem('equity') as number} onChange={(v: string) => setPremField('equity', Number(v))} hint={FIELD_HINTS.equity} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
-              <PHintField label="Hospitais alvo" field="hFim" value={getPrem('hFim') as number} onChange={(v: string) => setPremField('hFim', Number(v))} hint={FIELD_HINTS.hFim} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
-              <PHintField label="Prazo total (meses)" field="mesesPlan" min={6} max={36} value={getPrem('mesesPlan') as number} onChange={(v: string) => setPremField('mesesPlan', Math.min(36, Math.max(6, Number(v))))} hint={FIELD_HINTS.mesesPlan} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+        <section className="tab-panel active g1">
+          <div className="panel" style={{ background: 'var(--sur2)', borderLeft: '4px solid var(--pri)' }}>
+            <div className="pb">
+              <p className="note" style={{ fontSize: '1.05rem', color: 'var(--tx)', fontWeight: 500 }}>
+                “A alocação prioriza validação do primeiro hospital real. O capital não é para escala agressiva antes da prova, mas para reduzir os principais riscos: fechamento comercial, execução da POC, operação assistida, integração quando aplicável, segurança/LGPD e criação de playbook replicável.”
+              </p>
             </div>
-            <div className="fields sub2" style={{ marginTop: '.875rem' }}><PHintField label="Início 1ª receita (mês)" field="inicioRec" value={getPrem('inicioRec') as number} onChange={(v: string) => setPremField('inicioRec', Number(v))} hint={FIELD_HINTS.inicioRec} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} /></div>
-            
-            <div className="section-divider" />
-            <span className="lbl">🏥 Receita Core</span>
-            <div className="fields sub2">
-              <PHintField label="Subscription / contrato (R$)" field="sub" value={getPrem('sub') as number} onChange={(v: string) => setPremField('sub', Number(v))} hint={FIELD_HINTS.sub} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
-              <PHintField label="Performance Fee / contrato (R$)" field="perf" value={getPrem('perf') as number} onChange={(v: string) => setPremField('perf', Number(v))} hint={FIELD_HINTS.perf} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+          </div>
+
+          <div className="status-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginTop: '1rem' }}>
+            <div className="status-card" style={{ borderTop: '4px solid var(--pri)' }}>
+              <div className="status-info">
+                <span className="status-label">Produto, Tech e Operação Piloto</span>
+                <strong className="status-value">56% / R$ 280.000</strong>
+                <span style={{ fontSize: '0.75rem', color: 'var(--pri)', fontWeight: 700, marginTop: '4px' }}>Reduz risco de execução e entrega técnica</span>
+              </div>
             </div>
-            
-            <div className="section-divider" />
-            <span className="lbl">⚡ Equa Pay — Antecipação</span>
-            <div className="fields sub2">
-              <PHintField label="Faturamento do hospital / mês (R$)" field="equaPayVol" value={getPrem('equaPayVol') as number} onChange={(v: string) => setPremField('equaPayVol', Number(v))} hint={FIELD_HINTS.equaPayVol} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
-              <div className="field"><label>Taxa de antecipação (%) <InfoBtn field="equaPayTaxa" /></label><input type="number" step={0.1} value={getPrem('equaPayTaxa') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('equaPayTaxa', Number(e.target.value))} /><small>Cobrada sobre o faturamento</small><TooltipBox field="equaPayTaxa" /></div>
+            <div className="status-card" style={{ borderTop: '4px solid var(--suc)' }}>
+              <div className="status-info">
+                <span className="status-label">Comercial e GTM</span>
+                <strong className="status-value">33% / R$ 165.000</strong>
+                <span style={{ fontSize: '0.75rem', color: 'var(--suc)', fontWeight: 700, marginTop: '4px' }}>Reduz risco de mercado e adesão comercial</span>
+              </div>
             </div>
-            
-            <div className="section-divider" />
-            <span className="lbl">📊 Revenue Share</span>
-            <div className="fields sub2">
-              <div className="field"><label>Revenue Share (%) <InfoBtn field="revSharePct" /></label><input type="number" step={0.5} value={getPrem('revSharePct') as number} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPremField('revSharePct', Number(e.target.value))} /><small>% sobre o faturamento antecipado</small><TooltipBox field="revSharePct" /></div>
-              <PHintField label="Mês de início (Equa Pay + Rev. Share)" field="revShareIni" value={getPrem('revShareIni') as number} onChange={(v: string) => setPremField('revShareIni', Number(v))} hint={FIELD_HINTS.revShareIni} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+            <div className="status-card" style={{ borderTop: '4px solid var(--war)' }}>
+              <div className="status-info">
+                <span className="status-label">Jurídico, Segurança e Admin</span>
+                <strong className="status-value">11% / R$ 55.000</strong>
+                <span style={{ fontSize: '0.75rem', color: 'var(--war)', fontWeight: 700, marginTop: '4px' }}>Reduz risco de compliance e fricção contratual</span>
+              </div>
             </div>
-            <div className="actions" style={{ marginTop: '1.5rem' }}><button className="btn pri" onClick={applyPremissas} style={{ opacity: premDirty ? 1 : 0.55 }}>✓ Aplicar premissas</button></div>
-          </div></div>
+          </div>
+
+          <div className="g3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+            <div className="panel">
+              <div className="ph" style={{ borderBottomColor: 'var(--pri)' }}><h2>1. Produto, Tech e Operação Piloto</h2></div>
+              <div className="pb">
+                <ul className="thesis-list">
+                  <li>Evolução Core-first para ingestão/exportação pré-ERP.</li>
+                  <li>Processamento de contratos, XMLs e guias reais.</li>
+                  <li>Revisão humana assistida no piloto.</li>
+                  <li>Auditabilidade por regra, agente, guia, evidência e impacto financeiro.</li>
+                  <li>Setup não integrado em até 7 dias.</li>
+                  <li>API/integração homologável em até 30 dias.</li>
+                  <li>Infraestrutura, observabilidade e segurança técnica.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="ph" style={{ borderBottomColor: 'var(--suc)' }}><h2>2. Comercial e GTM</h2></div>
+              <div className="pb">
+                <ul className="thesis-list">
+                  <li>Construção de base ICP.</li>
+                  <li>Prospecção ativa.</li>
+                  <li>Mapeamento de sponsors financeiros e operacionais.</li>
+                  <li>Eventos e reuniões presenciais.</li>
+                  <li>Materiais de venda, diagnóstico, ROI e proposta.</li>
+                  <li>Playbook comercial e case replicável.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="ph" style={{ borderBottomColor: 'var(--war)' }}><h2>3. Jurídico, Segurança e Administração</h2></div>
+              <div className="pb">
+                <ul className="thesis-list">
+                  <li>NDA, contrato, DPA/LGPD e anexos técnicos.</li>
+                  <li>Data room comercial e jurídico.</li>
+                  <li>Documentação de segurança.</li>
+                  <li>Redlines e fluxo de aprovação.</li>
+                  <li>Custos administrativos essenciais da rodada/piloto.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="section-divider" style={{ marginTop: '3rem' }} />
           
-          <div className="panel"><div className="ph"><h2>Estrutura de Custos</h2></div><div className="pb">
-            {AREA_LIST.map(area => {
-              const items = state.areaCosts[area] || []; const total = items.reduce((a, c) => a + c.monthly, 0);
-              return (
-                <div key={area} className="custo-panel">
-                  <div className="custo-header">
-                    <div>
-                      <span className="custo-area-name">{AREA_LABELS[area]}</span>
-                      <div className="custo-summary">
-                        <span className="pill pri">{BRL(total)}/mês médio</span>
-                        <span className="pill">{items.length} itens</span>
-                      </div>
-                    </div>
-                    <button className="btn-sm pri" onClick={() => addCost(area)}>+ Item</button>
-                  </div>
-                  <div className="custo-body tw">
-                    <table className="cost-table">
-                      <thead>
-                        <tr>
-                          <th>CATEGORIA</th>
-                          <th>DESCRIÇÃO</th>
-                          <th>R$/MÊS</th>
-                          <th>MÊS INI.</th>
-                          <th>MÊS FIM</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map(c => (
-                          <tr key={c.id}>
-                            <td>
-                              <select value={c.cat} onChange={(e) => updCost(area, c.id, { cat: e.target.value as any })}>
-                                {Object.keys(CAT_LABELS).map(cat => <option key={cat} value={cat}>{CAT_LABELS[cat]}</option>)}
-                              </select>
-                            </td>
-                            <td><input value={c.desc} onChange={(e) => updCost(area, c.id, { desc: e.target.value })} /></td>
-                            <td><input type="number" value={c.monthly} onChange={(e) => updCost(area, c.id, { monthly: Number(e.target.value) })} /></td>
-                            <td><input type="number" value={c.startM} style={{ width: '60px' }} onChange={(e) => updCost(area, c.id, { startM: Number(e.target.value) })} /></td>
-                            <td><input type="number" value={c.endM} style={{ width: '60px' }} onChange={(e) => updCost(area, c.id, { endM: Number(e.target.value) })} /></td>
-                            <td><button className="btn-icon danger" onClick={() => delCost(area, c.id)}>✕</button></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+          <div className="panel" style={{ opacity: 0.85 }}>
+            <div className="ph">
+              <h2>Configuração do Modelo (Sistema)</h2>
+              {premDirty && <span className="pill war">Alterações pendentes</span>}
+            </div>
+            <div className="pb">
+              <div className="fields sub4">
+                <PHintField label="Captação (R$)" field="captacao" value={getPrem('captacao') as number} onChange={(v: string) => setPremField('captacao', Number(v))} hint={FIELD_HINTS.captacao} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+                <PHintField label="Equity %" field="equity" step={0.1} value={getPrem('equity') as number} onChange={(v: string) => setPremField('equity', Number(v))} hint={FIELD_HINTS.equity} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+                <PHintField label="Hospitais alvo" field="hFim" value={getPrem('hFim') as number} onChange={(v: string) => setPremField('hFim', Number(v))} hint={FIELD_HINTS.hFim} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+                <PHintField label="Prazo total (meses)" field="mesesPlan" min={6} max={36} value={getPrem('mesesPlan') as number} onChange={(v: string) => setPremField('mesesPlan', Math.min(36, Math.max(6, Number(v))))} hint={FIELD_HINTS.mesesPlan} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+              </div>
+              <div className="fields sub2" style={{ marginTop: '1rem' }}>
+                <PHintField label="Início 1ª receita (mês)" field="inicioRec" value={getPrem('inicioRec') as number} onChange={(v: string) => setPremField('inicioRec', Number(v))} hint={FIELD_HINTS.inicioRec} tooltip={tooltip} setTooltip={setTooltip} InfoBtn={InfoBtn} TooltipBox={TooltipBox} />
+                <div className="field" style={{ justifyContent: 'center' }}>
+                  <button className="btn pri" onClick={applyPremissas} style={{ width: 'fit-content' }}>✓ Aplicar mudanças no modelo</button>
                 </div>
-              );
-            })}
-          </div></div>
+              </div>
+
+              <div className="section-divider" />
+              <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem', color: 'var(--txf)' }}>Detalhamento Mensal de OPEX (para DRE)</h3>
+              {AREA_LIST.map(area => {
+                const items = state.areaCosts[area] || []; const total = items.reduce((a, c) => a + c.monthly, 0);
+                return (
+                  <div key={area} className="custo-panel">
+                    <div className="custo-header">
+                      <div>
+                        <span className="custo-area-name">{AREA_LABELS[area]}</span>
+                        <div className="custo-summary"><span className="pill pri">{BRL(total)}/mês</span><span className="pill">{items.length} itens</span></div>
+                      </div>
+                      <button className="btn-sm pri" onClick={() => addCost(area)}>+ Item</button>
+                    </div>
+                    <div className="custo-body tw">
+                      <table className="cost-table">
+                        <thead><tr><th>CATEGORIA</th><th>DESCRIÇÃO</th><th>R$/MÊS</th><th>MÊS INI.</th><th>MÊS FIM</th><th></th></tr></thead>
+                        <tbody>
+                          {items.map(c => (
+                            <tr key={c.id}>
+                              <td><select value={c.cat} onChange={(e) => updCost(area, c.id, { cat: e.target.value as any })}>{Object.keys(CAT_LABELS).map(cat => <option key={cat} value={cat}>{CAT_LABELS[cat]}</option>)}</select></td>
+                              <td><input value={c.desc} onChange={(e) => updCost(area, c.id, { desc: e.target.value })} /></td>
+                              <td><input type="number" value={c.monthly} onChange={(e) => updCost(area, c.id, { monthly: Number(e.target.value) })} /></td>
+                              <td><input type="number" value={c.startM} style={{ width: '60px' }} onChange={(e) => updCost(area, c.id, { startM: Number(e.target.value) })} /></td>
+                              <td><input type="number" value={c.endM} style={{ width: '60px' }} onChange={(e) => updCost(area, c.id, { endM: Number(e.target.value) })} /></td>
+                              <td><button className="btn-icon danger" onClick={() => delCost(area, c.id)}>✕</button></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </section>
       )}
       {activeTab === 'roadmap' && (
