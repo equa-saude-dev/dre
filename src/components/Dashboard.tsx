@@ -33,11 +33,11 @@ const FIELD_HINTS: Record<string, string> = {
 };
 
 const DEFAULT_STATE: DREState = {
-  captacao: 400000, equity: 7, jurPct: 8, caixaPct: 20, inicioRec: 6, hFim: 10, mesesPlan: 18,
-  sub: 20000, perf: 10000, piloto: 0,
+  captacao: 500000, equity: 8.33, jurPct: 8, caixaPct: 20, inicioRec: 6, hFim: 1, mesesPlan: 18,
+  sub: 30000, perf: 0, piloto: 0,
   equaPayVol: 80000, equaPayTaxa: 2.5, equaPayIni: 8,
   revSharePct: 8, revShareBase: 80000, revShareIni: 8,
-  revMult: 5,
+  revMult: 6,
   areaCosts: {
     produto: [
       { id: 101, cat: 'folha', desc: 'CTO / Dev Fullstack', monthly: 12000, startM: 1, endM: 18 },
@@ -60,9 +60,9 @@ const DEFAULT_STATE: DREState = {
     outro: [],
   },
   scenarios: [
-    { id: 1, name: 'Conservador — mínimo para rodar', cap: 400000, eq: 6.8, hFim: 7, sub: 15000, perf: 7000, runwayTarget: null, contratoAssinado: 11, primeiraReceita: 15, cicloVenda: 180, onboarding: 90, caixaMinimo: '-R$ 56.000', novaRodada: 8 },
-    { id: 2, name: 'Plano principal', cap: 500000, eq: 8.3, hFim: 10, sub: 20000, perf: 10000, runwayTarget: null, contratoAssinado: 9, primeiraReceita: 12, cicloVenda: 120, onboarding: 60, caixaMinimo: 'R$ 64.000', novaRodada: 9 },
-    { id: 3, name: 'Aceleração opcional', cap: 600000, eq: 9.8, hFim: 15, sub: 22000, perf: 12000, runwayTarget: null, contratoAssinado: 7, primeiraReceita: 10, cicloVenda: 90, onboarding: 30, caixaMinimo: 'R$ 144.000', novaRodada: 7 },
+    { id: 1, name: 'Conservador — mínimo para rodar', cap: 500000, eq: 8.33, hFim: 1, sub: 30000, perf: 0, runwayTarget: null, contratoAssinado: 11, primeiraReceita: 15, cicloVenda: 180, onboarding: 90, caixaMinimo: '-R$ 56.000', novaRodada: 8 },
+    { id: 2, name: 'Plano principal', cap: 500000, eq: 8.33, hFim: 1, sub: 30000, perf: 0, runwayTarget: null, contratoAssinado: 9, primeiraReceita: 12, cicloVenda: 120, onboarding: 60, caixaMinimo: 'R$ 64.000', novaRodada: 9 },
+    { id: 3, name: 'Aceleração opcional', cap: 500000, eq: 8.33, hFim: 1, sub: 30000, perf: 0, runwayTarget: null, contratoAssinado: 7, primeiraReceita: 10, cicloVenda: 90, onboarding: 30, caixaMinimo: 'R$ 144.000', novaRodada: 7 },
   ],
   phases: [
     { id: 1, name: 'M1 · Validação', startM: 1, endM: 9, objective: 'Primeira prova comercial e operacional completa da Equa', kr: '1 contrato assinado, 3 contas-alvo em pipeline qualificado avançado',
@@ -88,10 +88,10 @@ const DEFAULT_STATE: DREState = {
     { id: 2, name: 'M2 · Piloto', startM: 10, endM: 15, objective: '3 hospitais pagantes, NPS ≥ 40', kr: 'MRR ≥ R$ 90k, churn = 0', initiatives: [] },
   ],
   projecao: {
-    ano1: { novosHospitais: 1, churnAnual: 0, hospitaisPerdidos: 0, hospitaisFim: 1, hospitaisMedios: 0.08, ticketInicial: 30000, expansaoUpsell: 0, ticket: 30000, cac: 100000, margemBruta: 70, custo: 60000, subPct: 50, perfPct: 50 },
-    ano2: { novosHospitais: 15, churnAnual: 5, hospitaisPerdidos: 1, hospitaisFim: 15, hospitaisMedios: 10, ticketInicial: 35000, expansaoUpsell: 15, ticket: 40250, cac: 70000, margemBruta: 70, custo: 250000, subPct: 60, perfPct: 40 },
-    ano3: { novosHospitais: 33, churnAnual: 7, hospitaisPerdidos: 3, hospitaisFim: 45, hospitaisMedios: 35, ticketInicial: 40000, expansaoUpsell: 20, ticket: 48000, cac: 50000, margemBruta: 70, custo: 500000, subPct: 70, perfPct: 30 },
-    ano4: { novosHospitais: 42, churnAnual: 10, hospitaisPerdidos: 5, hospitaisFim: 78, hospitaisMedios: 75, ticketInicial: 50000, expansaoUpsell: 25, ticket: 62500, cac: 40000, margemBruta: 70, custo: 1000000, subPct: 80, perfPct: 20 },
+    ano1: { novosHospitais: 1, churnAnual: 0, hospitaisPerdidos: 0, hospitaisFim: 1, hospitaisMedios: 0.0833, ticketInicial: 30000, expansaoUpsell: 0, ticket: 30000, cac: 100000, margemBruta: 0, custo: 450000, subPct: 50, perfPct: 50 },
+    ano2: { novosHospitais: 14, churnAnual: 5, hospitaisPerdidos: 1, hospitaisFim: 14, hospitaisMedios: 8, ticketInicial: 35000, expansaoUpsell: 15, ticket: 40250, cac: 80000, margemBruta: 45, custo: 2880000, subPct: 60, perfPct: 40 },
+    ano3: { novosHospitais: 31, churnAnual: 7, hospitaisPerdidos: 3, hospitaisFim: 42, hospitaisMedios: 23, ticketInicial: 40000, expansaoUpsell: 20, ticket: 48000, cac: 60000, margemBruta: 60, custo: 6000000, subPct: 70, perfPct: 30 },
+    ano4: { novosHospitais: 48, churnAnual: 10, hospitaisPerdidos: 9, hospitaisFim: 81, hospitaisMedios: 50, ticketInicial: 50000, expansaoUpsell: 25, ticket: 62500, cac: 50000, margemBruta: 70, custo: 12000000, subPct: 80, perfPct: 20 },
     invest_cap: 500000,
     invest_pre: 5500000,
     mult_cons: 4,
@@ -350,22 +350,38 @@ export default function Dashboard() {
   const projCalculada = useMemo(() => {
     const proj = state.projecao || DEFAULT_STATE.projecao!;
     const res: Record<string, any> = {};
-    let currentBase = 0;
-    ['ano1', 'ano2', 'ano3', 'ano4'].forEach((y, i) => {
+    ['ano1', 'ano2', 'ano3', 'ano4'].forEach((y) => {
       const ky = y as 'ano1' | 'ano2' | 'ano3' | 'ano4';
       const term = proj[ky] || DEFAULT_STATE.projecao![ky];
-      const startBase = currentBase;
-      const totalBeforeChurn = startBase + (term.novosHospitais || 0);
-      const lost = Math.round(totalBeforeChurn * ((term.churnAnual || 0) / 100));
-      const net = totalBeforeChurn - lost;
-      const finalTicket = (term.ticketInicial || 0) * (1 + (term.expansaoUpsell || 0) / 100);
-      res[ky] = { ...term, hospitaisFim: net, hospitaisPerdidos: lost, hospitaisInicio: startBase, ticket: finalTicket };
-      currentBase = net;
+      
+      const ticketFinal = term.ticket; // Já calculado/definido no state
+      const receitaReconhecida = term.hospitaisMedios * ticketFinal * 12;
+      const mrrSaida = term.hospitaisFim * ticketFinal;
+      const arrSaida = mrrSaida * 12;
+      
+      const subArr = arrSaida * ((term.subPct ?? 0) / 100);
+      const perfArr = arrSaida * ((term.perfPct ?? 0) / 100);
+      const valPonderado = (subArr * (proj.mult_sub ?? 0)) + (perfArr * (proj.mult_perf ?? 0));
+      
+      res[ky] = { 
+        ...term, 
+        receitaReconhecida, 
+        mrrSaida, 
+        arrSaida, 
+        subArr, 
+        perfArr, 
+        valPonderado,
+        margemOperacional: receitaReconhecida - (term.custo ?? 0)
+      };
     });
     return res;
   }, [state.projecao]);
-  const postMoney = state.equity > 0 ? state.captacao / (state.equity / 100) : 0;
-  const preMoney = postMoney - state.captacao;
+
+  const cap = state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap!;
+  const preMoney = state.projecao?.invest_pre ?? DEFAULT_STATE.projecao!.invest_pre!;
+  const postMoney = preMoney + cap;
+  const equityRodada = postMoney > 0 ? (cap / postMoney) * 100 : 0;
+  const participationDiluida = state.projecao?.diluicao ?? DEFAULT_STATE.projecao!.diluicao!;
   const lastD = dreData[dreData.length - 1];
   const txtColor = isDark ? '#f0eeff' : '#1a1825';
   const gridColor = isDark ? '#2e2c3e' : '#e8e6e1';
@@ -498,10 +514,10 @@ export default function Dashboard() {
           <div className="g2">
           <div className="panel"><div className="ph"><h2>Resumo executivo</h2><span className="pill">{meses} meses</span></div><div className="pb">
             <div className="mg">
-              <div className="metric"><span>Captação</span><strong>{BRL(state.captacao)}</strong></div>
-              <div className="metric"><span>Pré-money</span><strong>{BRL(preMoney)}</strong></div>
-              <div className="metric"><span>Pós-money</span><strong>{BRL(postMoney)}</strong></div>
-              <div className="metric"><span>Equity ofertado</span><strong>{state.equity}%</strong></div>
+              <div className="metric"><span>Captação rodada atual</span><strong>{BRL(cap)}</strong></div>
+              <div className="metric"><span>Valuation pré-money</span><strong>{BRL(preMoney)}</strong></div>
+              <div className="metric"><span>Valuation pós-money</span><strong>{BRL(postMoney)}</strong></div>
+              <div className="metric"><span>Participação da rodada</span><strong>{equityRodada.toFixed(2).replace('.', ',')}%</strong></div>
               <div className="metric good"><span>Runway estimado</span><strong>{meses} meses</strong></div>
               <div className={`metric ${lastD && lastD.caixa > 0 ? 'good' : 'warn'}`}><span>Caixa final</span><strong>{BRL(lastD?.caixa || 0)}</strong></div>
               <div className="metric"><span>Hospitais ao final</span><strong>{lastD?.h || 0}</strong></div>
@@ -566,7 +582,7 @@ export default function Dashboard() {
             </div>
           </div></div>
 
-          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Retorno potencial para investidores (MOIC)</h2></div><div className="pb-nopad">
+          <div className="panel" style={{ marginTop: '1.5rem' }}><div className="ph"><h2>Simulação de Retorno Potencial (Ilustrativa)</h2></div><div className="pb-nopad">
             <div style={{ padding: '1.25rem 1.25rem 0' }}>
               {(() => {
                 const xsProj = ['Ano 2', 'Ano 3', 'Ano 4'];
@@ -576,37 +592,28 @@ export default function Dashboard() {
                 const post = cap + pre;
                 const part = post > 0 ? (cap / post) : 0;
                 const diluicao = (state.projecao?.diluicao ?? DEFAULT_STATE.projecao!.diluicao!) / 100;
-                const multBase = state.projecao?.mult_base ?? DEFAULT_STATE.projecao!.mult_base!;
-                const multSub = state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub!;
-                const multPerf = state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf!;
-                const valType = state.projecao?.val_type ?? 'weighted';
-
-                const moicSemDiluicao = xsProj.map((_, i) => {
-                  const p = ['ano2', 'ano3', 'ano4'][i];
-                  const proj = state.projecao?.[p as "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano2" | "ano3" | "ano4"];
-                  const arr = proj.hospitaisFim * proj.ticket * 12;
-                  let val = 0;
-                  if (valType === 'weighted') {
-                    val = (arr * ((proj.subPct ?? 0) / 100) * multSub) + (arr * ((proj.perfPct ?? 0) / 100) * multPerf);
-                  } else {
-                    val = arr * multBase;
-                  }
-                  const returnVal = val * part;
-                  return cap > 0 ? returnVal / cap : 0;
+                
+                const projCalculada: any = {
+                  ano2: state.projecao?.ano2 ?? DEFAULT_STATE.projecao!.ano2!,
+                  ano3: state.projecao?.ano3 ?? DEFAULT_STATE.projecao!.ano3!,
+                  ano4: state.projecao?.ano4 ?? DEFAULT_STATE.projecao!.ano4!
+                };
+                Object.keys(projCalculada).forEach(p => {
+                    const proj = projCalculada[p];
+                    const arr = proj.hospitaisFim * proj.ticket * 12;
+                    const val = (arr * ((proj.subPct ?? 0) / 100) * (state.projecao?.mult_sub ?? DEFAULT_STATE.projecao!.mult_sub!)) + (arr * ((proj.perfPct ?? 0) / 100) * (state.projecao?.mult_perf ?? DEFAULT_STATE.projecao!.mult_perf!));
+                    proj.valPonderado = val;
                 });
 
+                const moicSemDiluicao = xsProj.map((_, i) => {
+                  const p = `ano${i + 2}`;
+                  const proj = projCalculada[p];
+                  return cap > 0 ? (proj.valPonderado * part) / cap : 0;
+                });
                 const moicComDiluicao = xsProj.map((_, i) => {
-                  const p = ['ano2', 'ano3', 'ano4'][i];
-                  const proj = state.projecao?.[p as "ano2" | "ano3" | "ano4"] || DEFAULT_STATE.projecao![p as "ano2" | "ano3" | "ano4"];
-                  const arr = proj.hospitaisFim * proj.ticket * 12;
-                  let val = 0;
-                  if (valType === 'weighted') {
-                    val = (arr * ((proj.subPct ?? 0) / 100) * multSub) + (arr * ((proj.perfPct ?? 0) / 100) * multPerf);
-                  } else {
-                    val = arr * multBase;
-                  }
-                  const returnVal = val * diluicao;
-                  return cap > 0 ? returnVal / cap : 0;
+                  const p = `ano${i + 2}`;
+                  const proj = projCalculada[p];
+                  return cap > 0 ? (proj.valPonderado * diluicao) / cap : 0;
                 });
 
                 return (
@@ -1185,13 +1192,9 @@ export default function Dashboard() {
                   <tr style={{ height: '1rem' }}><td colSpan={5}></td></tr>
                   <tr className="subtotal">
                     <td>Receita reconhecida no ano</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
-                      let rec = proj.hospitaisMedios * proj.ticket * 12;
-                      if (i === 0) {
-                        rec = dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
-                      }
-                      return <td key={p} className="r bold">{BRL(rec)}</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p) => {
+                      const proj = projCalculada[p];
+                      return <td key={p} className="r bold">{BRL(proj.receitaReconhecida)}</td>
                     })}
                   </tr>
                   <tr className="subtotal" style={{ color: 'var(--war)' }}>
@@ -1323,11 +1326,9 @@ export default function Dashboard() {
                 <tbody>
                   <tr className="subtotal">
                     <td>Receita reconhecida no ano</td>
-                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p, i) => {
-                      const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
-                      let val = proj.hospitaisMedios * proj.ticket * 12;
-                      if (i === 0) val = dreData.slice(0, 12).reduce((sum, d) => sum + d.recReconhecida, 0);
-                      return <td key={p} className="r bold">{BRL(val)}</td>
+                    {['ano1', 'ano2', 'ano3', 'ano4'].map((p) => {
+                      const proj = projCalculada[p];
+                      return <td key={p} className="r bold">{BRL(proj.receitaReconhecida)}</td>
                     })}
                   </tr>
                   <tr>
@@ -1396,7 +1397,7 @@ export default function Dashboard() {
               </table>
             </div>
             <p className="note" style={{ marginTop: '0.75rem', fontSize: '0.8rem', fontStyle: 'italic' }}>
-              No Ano 1, a companhia ainda está em fase de validação/piloto. Por isso, receita anualizada de saída, Subscription ARR e performance fee run-rate são apresentados como N/A nessa seção. A receita efetivamente reconhecida no Ano 1 permanece refletida na DRE e na Projeção de Receita. A partir do Ano 2, receita anualizada de saída representa o run-rate do último mês multiplicado por 12, calculado com base nos hospitais ativos líquidos após churn e no ticket final mensal com expansão. Subscription é tratada como ARR recorrente; performance fee é tratado como run-rate variável estimado, com múltiplo menor por depender de timing, baseline, validação do hospital e captura efetiva de valor.
+              No Ano 1, a companhia ainda está em fase de validação/piloto. Por isso, as métricas de saída são apresentadas como N/A. A partir do Ano 2, a receita anualizada de saída representa o run-rate (MRR × 12). Subscription é tratada como ARR recorrente (6x); performance fee é tratado como run-rate variável estimado (3x).
             </p>
 
             <div style={{ padding: '1.5rem 0 0' }}>
@@ -1522,7 +1523,8 @@ export default function Dashboard() {
       )}
       {activeTab === 'roi' && (
         <section className="tab-panel active g1">
-          <div className="panel"><div className="ph"><h2>Retorno potencial para investidores</h2></div><div className="pb">
+          <div className="panel"><div className="ph"><h2>Simulação de Retorno Potencial (Ilustrativa)</h2></div><div className="pb">
+            <p className="note" style={{ marginBottom: '1.5rem' }}>Esta aba apresenta uma <strong>simulação ilustrativa bruta</strong> de retorno. Não representa promessa de liquidez ou garantia de rentabilidade futura.</p>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--pri)' }}>Rodada atual</h3>
             <div className="fields sub2">
               <div className="field"><label>Captação (R$)</label><input type="number" value={state.projecao?.invest_cap ?? DEFAULT_STATE.projecao!.invest_cap} onChange={(e) => handleUpdate({ projecao: { ...state.projecao!, invest_cap: Number(e.target.value) } })} /></div>
@@ -1628,15 +1630,8 @@ export default function Dashboard() {
                       <tr className="subtotal">
                         <td>Sem diluição ({(part * 100).toFixed(2).replace('.', ',')}%)</td>
                         {['ano2', 'ano3', 'ano4'].map(p => {
-                          const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
-                          const arr = proj.hospitaisFim * proj.ticket * 12;
-                          let val = 0;
-                          if (valType === 'weighted') {
-                            val = (arr * ((proj.subPct ?? 0) / 100) * multSub) + (arr * ((proj.perfPct ?? 0) / 100) * multPerf);
-                          } else {
-                            val = arr * multBase;
-                          }
-                          const returnVal = val * part;
+                          const proj = projCalculada[p];
+                          const returnVal = proj.valPonderado * part;
                           const moic = cap > 0 ? returnVal / cap : 0;
                           return <td key={p} className="r"><div>{BRL(returnVal)}</div><div style={{ fontSize: '0.8rem', color: 'var(--pri)', fontWeight: 'bold' }}>{moic.toFixed(1).replace('.', ',')}x</div></td>
                         })}
@@ -1644,15 +1639,8 @@ export default function Dashboard() {
                       <tr className="subtotal">
                         <td>Com diluição estimada ({(diluicao * 100).toFixed(2).replace('.', ',')}%)</td>
                         {['ano2', 'ano3', 'ano4'].map(p => {
-                          const proj = projCalculada[p as "ano1" | "ano2" | "ano3" | "ano4"];
-                          const arr = proj.hospitaisFim * proj.ticket * 12;
-                          let val = 0;
-                          if (valType === 'weighted') {
-                            val = (arr * ((proj.subPct ?? 0) / 100) * multSub) + (arr * ((proj.perfPct ?? 0) / 100) * multPerf);
-                          } else {
-                            val = arr * multBase;
-                          }
-                          const returnVal = val * diluicao;
+                          const proj = projCalculada[p];
+                          const returnVal = proj.valPonderado * diluicao;
                           const moic = cap > 0 ? returnVal / cap : 0;
                           return <td key={p} className="r"><div>{BRL(returnVal)}</div><div style={{ fontSize: '0.8rem', color: 'var(--pri)', fontWeight: 'bold' }}>{moic.toFixed(1).replace('.', ',')}x</div></td>
                         })}
@@ -1663,7 +1651,7 @@ export default function Dashboard() {
               );
             })()}
             <p className="note" style={{ marginTop: '1rem' }}>
-              Os cenários de valuation são ilustrativos. Subscription ARR recebe múltiplo superior por representar receita recorrente mais previsível. Performance fee é tratado como run-rate variável estimado e recebe múltiplo menor por depender de baseline, timing, validação do hospital e captura efetiva de valor. Cenários não representam promessa de liquidez, valuation futuro ou retorno garantido.
+              <strong>Nota:</strong> Os cenários de valuation são simulações ilustrativas. Subscription ARR recebe múltiplo superior (6x) por representar receita recorrente. Performance fee é run-rate variável estimado com múltiplo menor (3x). Estes cálculos não consideram impostos sobre ganho de capital ou eventos de liquidez específicos.
             </p>
           </div></div>
         </section>
